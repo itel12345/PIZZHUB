@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Pizza {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  image       String
+  createdAt   DateTime @default(now())
+}
