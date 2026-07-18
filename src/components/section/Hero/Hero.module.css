@@ -1,0 +1,428 @@
+/* ============================================
+   Hero.module.css
+   Original two-column Hero, rebuilt with
+   senior-level execution. Light theme, using
+   the project's existing design tokens only.
+============================================ */
+
+/* --------------------------------------
+   Shared Composable Rules
+-------------------------------------- */
+.pill {
+  border-radius: 9999px;
+}
+
+.glassBorder {
+  border: 1px solid var(--color-glass-border);
+}
+
+.glassFill {
+  background: var(--color-glass);
+}
+
+.blurEffect {
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+/* --------------------------------------
+   Hero
+   Two-column grid: content left, artwork
+   right. Vertically centered, generous
+   max-width and padding for premium
+   breathing room.
+-------------------------------------- */
+.hero {
+  --glass-blur: 20px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 6rem;
+  min-height: 100vh;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 6rem;
+}
+
+/* --------------------------------------
+   Content
+-------------------------------------- */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+
+  animation: fadeIn 0.7s ease-out both;
+}
+
+/* --------------------------------------
+   Badge
+-------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+
+  animation: fadeInUp 0.6s ease-out 0.15s both;
+}
+
+/* --------------------------------------
+   Headline
+-------------------------------------- */
+.headline {
+  font-size: var(--text-5xl);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+/* --------------------------------------
+   Description
+-------------------------------------- */
+.description {
+  font-size: var(--text-lg);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  max-width: 52ch;
+
+  animation: fadeInUp 0.6s ease-out 0.45s both;
+}
+
+/* --------------------------------------
+   Actions
+-------------------------------------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+
+  animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  padding: 0.875rem 2rem;
+
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+
+  transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.buttonPrimary {
+  background: var(--color-orange);
+  color: var(--color-text-inverse);
+  border: 1px solid transparent;
+}
+
+.buttonPrimary:hover {
+  opacity: 0.9;
+}
+
+.buttonSecondary {
+  background: transparent;
+   --color-text-inverse: #ffffff;
+}
+
+/* --------------------------------------
+   Artwork
+   Right column. overflow: hidden keeps the
+   glow safely contained and away from the
+   text column and Navbar above.
+-------------------------------------- */
+.artwork {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.stage {
+  position: relative;
+  width: 480px;
+  height: 480px;
+}
+
+/* --------------------------------------
+   Ambient Glow
+   Sized so its radial fade completes well
+   inside the stage before .artwork's
+   overflow: hidden would ever clip it.
+-------------------------------------- */
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 580px;
+  height: 580px;
+  margin-top: -290px;
+  margin-left: -290px;
+
+  background: radial-gradient(circle, var(--color-orange) 0%, transparent 0%);
+  filter: blur(90px);
+  opacity: 0.3;
+  z-index: -1;
+
+  animation: glowPulse 8s ease-in-out infinite;
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+
+/* Hover: glow warms and gently intensifies —
+   subtle "backlight" reacting to the user,
+   layered on top of the existing ambient pulse. */
+
+.artwork:hover .glow {
+  opacity: 0.55;
+  transform: scale(1.08);
+  filter: blur(90px) brightness(1.15) saturate(1.1);
+}
+/* --------------------------------------
+   Decorative Rings
+   Thin, static, non-clipping circles —
+   pure decoration, not a container.
+   Differentiated stroke/opacity so they
+   read as layered depth, not a bullseye.
+-------------------------------------- */
+.ringOuter,
+.ringInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+}
+
+.ringOuter {
+  width: 465px;
+  height: 440px;
+  margin-top: -220px;
+  margin-left: -220px;
+
+  border: 5px solid var(--color-glass-border);
+  opacity: 0.45;
+}
+
+.ringInner {
+  width: 390px;
+  height: 366px;
+  margin-top: -183px;
+  margin-left: -183px;
+
+  border: 5px solid var(--color-glass-border);
+  opacity: 0.8;
+  box-shadow: 0 0 24px 0 var(--color-orange);
+}
+/* --------------------------------------
+   Pizza Image
+   65–70% of the stage, never larger.
+   No frame, no background, no clipping —
+   the transparent PNG floats freely.
+-------------------------------------- */
+.image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 370px;
+  height: 383px;
+  margin-top: -185px;
+  margin-left: -170px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform; 
+  transform: scale(1)
+}
+.image:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   Responsive Breakpoints
+============================================ */
+
+@media (max-width: 1024px) {
+  .hero {
+    gap: 3rem;
+    padding: 0 3rem;
+  }
+  .stage {
+    width: 360px;
+    height: 360px;
+  }
+
+  .glow {
+    width: 380px;
+    height: 380px;
+    margin-top: -190px;
+    margin-left: -190px;
+  }
+  .ringOuter {
+  width: 330px;
+  height: 330px;
+  margin-top: -165px;
+  margin-left: -165px;
+  }
+
+ .ringInner {
+  width: 275px;
+  height: 275px;
+  margin-top: -137px;
+  margin-left: -137px;
+ }
+
+  .image {
+    width: 250px;
+    height: 250px;
+    margin-top: -125px;
+    margin-left: -125px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 4rem 1.5rem;
+    gap: 2.5rem;
+  }
+
+  .content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .description {
+    max-width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actions .button {
+    width: 100%;
+  }
+
+  .stage {
+    width: min(280px, 75vw);
+    height: min(280px, 75vw);
+  }
+
+  .glow {
+    width: min(300px, 80vw);
+    height: min(300px, 80vw);
+    margin-top: calc(min(300px, 80vw) / -2);
+    margin-left: calc(min(300px, 80vw) / -2);
+  }
+
+  .ringOuter {
+  width: min(255px, 68vw);
+  height: min(255px, 68vw);
+  margin-top: calc(min(255px, 68vw) / -2);
+  margin-left: calc(min(255px, 68vw) / -2);
+}
+
+.ringInner {
+  width: min(210px, 56vw);
+  height: min(210px, 56vw);
+  margin-top: calc(min(210px, 56vw) / -2);
+  margin-left: calc(min(210px, 56vw) / -2);
+}
+
+  .image {
+    width: min(190px, 50vw);
+    height: min(190px, 50vw);
+    margin-top: calc(min(190px, 50vw) / -2);
+    margin-left: calc(min(190px, 50vw) / -2);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Completely hide the entire right-side container (Image, Rings, Glow) */
+  .artwork {
+    display: none !important;
+  }
+}
+/* ============================================
+   Animations
+   Only two: pizza float, glow pulse.
+============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pizzaFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(8px) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content,
+  .badge,
+  .headline,
+  .description,
+  .actions,
+  .artwork,
+  .glow,
+  .image {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

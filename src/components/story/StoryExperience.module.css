@@ -1,0 +1,84 @@
+/* ============================================
+   StoryExperience.module.css
+   Dark, editorial "premium story" section.
+   Continues the Hero's visual language
+   (existing tokens, glass, orange glow) on a
+   pure-black background. Long-form, scene-
+   based layout — not a single flat block.
+============================================ */
+
+/* --------------------------------------
+   Section Shell
+   min-height enforces the "long premium
+   experience" (1700–2200px) requirement.
+   overflow: hidden keeps floating/glow
+   layers from ever leaking past the edge,
+   same safe-clip principle as Hero.
+-------------------------------------- */
+.section {
+  position: relative;
+  isolation: isolate; /* new stacking context, keeps z-index scoped */
+  overflow: hidden;
+
+  background: var(--color-background-dark);
+  min-height: 1900px;
+
+  padding: 8rem 0;
+}
+
+/* --------------------------------------
+   Background Layer
+   Hosts the reused BackgroundGlow effect.
+   Sits behind all scene content, never
+   intercepts pointer events.
+-------------------------------------- */
+.backgroundLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --------------------------------------
+   Scene Container
+   Centers content, gives every Part a
+   consistent max-width and horizontal
+   rhythm to sit inside.
+-------------------------------------- */
+.container {
+  position: relative;
+  z-index: 1;
+
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 6rem;
+
+  display: flex;
+  flex-direction: column;
+  /* Generous vertical rhythm between scenes so each
+     Part reads as its own moment, not a cramped list. */
+  gap: 12rem;
+}
+
+@media (max-width: 1024px) {
+  .section {
+    padding: 6rem 0;
+  }
+
+  .container {
+    padding: 0 3rem;
+    gap: 8rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+    gap: 5rem;
+  }
+}

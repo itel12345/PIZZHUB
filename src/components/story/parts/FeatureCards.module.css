@@ -1,0 +1,165 @@
+/* ============================================
+   FeatureCards.module.css
+   Part 3 — floating glass feature cards.
+   Staggered reveal, idle float, hover glow.
+============================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* --------------------------------------
+   Card
+   Staggered fade-up reveal (transition-delay
+   set inline per card from the component).
+-------------------------------------- */
+.card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 2rem 1.75rem;
+  border-radius: 1.25rem;
+
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  /* Idle float begins only once the card has revealed */
+  animation: idleFloat 6s ease-in-out infinite;
+}
+
+.card:hover {
+  border-color: var(--color-orange);
+  transform: translateY(-8px);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+.card:hover .cardGlow {
+  opacity: 0.5;
+}
+
+/* --------------------------------------
+   Soft glow behind each card, intensifies
+   on hover — reuses the orange token only.
+-------------------------------------- */
+.cardGlow {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 140%;
+  height: 60%;
+  transform: translateX(-50%);
+
+  background: radial-gradient(circle, var(--color-orange) 0%, transparent 70%);
+  filter: blur(50px);
+  opacity: 0.18;
+  z-index: -1;
+
+  transition: opacity 0.4s ease;
+}
+
+/* --------------------------------------
+   Icon
+-------------------------------------- */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-orange);
+}
+
+.icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* --------------------------------------
+   Text
+-------------------------------------- */
+.cardTitle {
+  margin-bottom: 0.5rem;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: #ffffff;
+}
+
+.cardDescription {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------
+   Idle float — very subtle continuous
+   bob, staggered per-card via inline
+   animation-delay from the component.
+-------------------------------------- */
+@keyframes idleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ============================================
+   Responsive
+============================================ */
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* --------------------------------------
+   Reduced motion — no stagger transition,
+   no idle float, cards simply present.
+-------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card.visible {
+    transition: none;
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,380 @@
+/* ============================================
+   Footer.module.css
+   Premium, minimal footer. Elegant black
+   (#050505, not glass, not gray), single
+   hairline top border, generous spacing.
+============================================ */
+
+.footer {
+  position: relative;
+  background: #050505;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 5rem 3rem 3rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------
+   Top block — logo + description
+-------------------------------------- */
+.topBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.logoWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.logoGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+
+  background: radial-gradient(circle, var(--color-orange) 0%, transparent 70%);
+  filter: blur(50px);
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.logo {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.logoAccent {
+  color: var(--color-orange);
+}
+
+.description {
+  max-width: 500px;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------
+   Divider — thin hairline, same border
+   token as the footer's own top border.
+-------------------------------------- */
+.divider {
+  width: 100%;
+  max-width: 1100px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* --------------------------------------
+   Columns
+   Three-column row on desktop, collapsing
+   per the responsive rules below.
+-------------------------------------- */
+.columns {
+  width: 100%;
+  max-width: 1100px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+/* --------------------------------------
+   Shared column styles (used by
+   FooterLinks, FooterContact,
+   FooterSocials)
+-------------------------------------- */
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible.column {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.columnHeading {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------
+   Navigation links
+-------------------------------------- */
+.linkList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  list-style: none;
+}
+
+.linkItem {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .linkItem:nth-child(1) { transition-delay: 80ms; }
+.visible .linkItem:nth-child(2) { transition-delay: 160ms; }
+.visible .linkItem:nth-child(3) { transition-delay: 240ms; }
+
+.visible .linkItem {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.link {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+
+  font-size: var(--text-base);
+  color: var(--color-text);
+  transition: color 0.3s ease;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-orange);
+
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link:hover {
+  color: var(--color-orange);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------
+   Contact list
+-------------------------------------- */
+.contactList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  list-style: none;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .contactItem:nth-child(1) { transition-delay: 80ms; }
+.visible .contactItem:nth-child(2) { transition-delay: 160ms; }
+.visible .contactItem:nth-child(3) { transition-delay: 240ms; }
+
+.visible .contactItem {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.contactIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--color-orange);
+}
+
+.contactLink {
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.contactLink:hover {
+  color: var(--color-orange);
+}
+
+.contactLink:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------
+   Social icons — circular glass buttons
+-------------------------------------- */
+.socialList {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+}
+
+.socialItem {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .socialItem:nth-child(1) { transition-delay: 80ms; }
+.visible .socialItem:nth-child(2) { transition-delay: 160ms; }
+.visible .socialItem:nth-child(3) { transition-delay: 240ms; }
+
+.visible .socialItem {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.socialButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-text-secondary);
+
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.socialButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.socialButton:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+  box-shadow: 0 0 20px 2px rgba(255, 122, 0, 0.25);
+}
+
+.socialButton:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------
+   Copyright
+-------------------------------------- */
+.copyright {
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* ============================================
+   Responsive
+============================================ */
+
+@media (max-width: 1024px) {
+  .footer {
+    padding: 4rem 2rem 2.5rem;
+    gap: 2.5rem;
+  }
+
+  .columns {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 2.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 3.5rem 1.5rem 2rem;
+    gap: 2rem;
+  }
+
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* --------------------------------------
+   Reduced motion
+-------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .footer,
+  .column,
+  .linkItem,
+  .contactItem,
+  .socialItem {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .socialButton:hover {
+    transform: none;
+  }
+}

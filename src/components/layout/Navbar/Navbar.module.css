@@ -1,0 +1,372 @@
+/* ============================================
+   Navbar — Responsive Layout
+   Premium glassmorphic navigation bar.
+   Desktop: inline nav + auth buttons.
+   Tablet: reduced spacing.
+   Mobile: hamburger trigger + collapsible panel.
+============================================ */
+
+.navbar {
+  width: 100%;
+  padding: 1.5rem 2rem;
+
+  animation: navbarFadeIn 0.5s ease-out both;
+}
+
+/* --------------------------------------
+   Inner Bar
+   The visible glass "pill" containing all
+   navbar content. Constrained to a max
+   width and centered, floating within the
+   full-width outer .navbar wrapper.
+-------------------------------------- */
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* --------------------------------------
+   Logo
+-------------------------------------- */
+.logo {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.logoAccent {
+  color: var(--color-orange);
+}
+
+/* --------------------------------------
+   Primary Links
+-------------------------------------- */
+
+/* Wraps the desktop instance of NavbarLinks so it can be
+   hidden at the mobile breakpoint without touching the
+   NavbarLinks component itself (which is reused again inside
+   the mobile panel below). */
+.desktopLinks {
+  display: flex;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.link {
+  position: relative;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* Animated underline — grows in on hover/active via
+   transform (GPU-accelerated, no layout reflow) rather
+   than animating width. */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1px;
+  background: var(--color-orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.link:hover {
+  color: var(--color-text);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Keyboard-only focus ring — :focus-visible avoids showing
+   the outline on mouse clicks, only on Tab navigation. */
+.link:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 4px;
+  border-radius: 4px;
+  color: var(--color-text);
+}
+
+/* Active (current page) link — permanently shows the same
+   treatment as hover, so "hovered" and "here" share one
+   consistent visual language. */
+.linkActive {
+  color: var(--color-text);
+}
+
+.linkActive::after {
+  transform: scaleX(1);
+}
+
+/* --------------------------------------
+   Actions (CTA + mobile trigger)
+-------------------------------------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* --------------------------------------
+   Auth Group
+   Groups "Log In" and "Order Now" tightly
+   together so they read as a related pair
+   rather than two independent nav items.
+-------------------------------------- */
+.authGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --------------------------------------
+   Nav Button Base
+   Shared box-model for Login and Order,
+   matching the same base+modifier pattern
+   used by Hero's .button/.buttonPrimary/
+   .buttonSecondary. Font-weight matches
+   Hero's buttons for typography consistency
+   across the design system.
+-------------------------------------- */
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+
+  transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* --------------------------------------
+   Log In (secondary action)
+   Quiet glass button — same surface
+   language as the outer navbar pill, but
+   deliberately subordinate to the CTA.
+-------------------------------------- */
+.loginButton {
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-glass-border);
+}
+
+.loginButton:hover {
+  background: var(--color-glass);
+  border-color: var(--color-text-secondary);
+}
+
+.cta {
+  color: var(--color-text-inverse);
+  background: var(--color-orange);
+  border: 1px solid transparent;
+}
+
+.cta:hover {
+  opacity: 0.9;
+}
+
+/* --------------------------------------
+   Mobile Trigger
+   Hidden by default; shown only at the
+   mobile breakpoint (see media query below).
+-------------------------------------- */
+.mobileOnly {
+  display: none;
+}
+
+.menuButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.menuIconBar {
+  display: block;
+  width: 1.25rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-text);
+}
+
+/* --------------------------------------
+   Mobile Panel
+   Collapsible dropdown shown below the bar
+   when the hamburger is toggled open.
+   Reuses NavbarLinks, NavbarLoginButton,
+   and NavbarCTA — no duplicate components.
+   Animated via max-height/opacity rather
+   than display, since display can't
+   transition smoothly.
+-------------------------------------- */
+.mobilePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  max-width: 1200px;
+  margin: 0.75rem auto 0;
+  padding: 0 1.5rem;
+  border-radius: 1.5rem;
+
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+}
+
+.mobilePanelOpen {
+  max-height: 480px;
+  opacity: 1;
+  padding: 1.25rem 1.5rem;
+  pointer-events: auto;
+}
+
+.mobilePanel .links {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.mobilePanelActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobilePanel .loginButton,
+.mobilePanel .cta {
+  width: 100%;
+}
+
+/* ============================================
+   Responsive Breakpoints
+============================================ */
+
+/* --------------------------------------
+   Tablet
+   Reduced spacing; nav and buttons stay
+   inline, just with tighter gaps.
+-------------------------------------- */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .inner {
+    padding: 0.625rem 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .links {
+    gap: 1.75rem;
+  }
+
+  .authGroup {
+    gap: 0.5rem;
+  }
+}
+
+/* --------------------------------------
+   Mobile
+   Desktop nav and auth buttons hidden;
+   hamburger trigger shown instead.
+-------------------------------------- */
+@media (max-width: 640px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .inner {
+    padding: 0.625rem 1rem;
+  }
+
+  .desktopLinks {
+    display: none;
+  }
+
+  .authGroup {
+    display: none;
+  }
+
+  .mobileOnly {
+    display: flex;
+  }
+}
+
+/* ============================================
+   Animations
+============================================ */
+
+@keyframes navbarFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------
+   Reduced Motion
+   Disables the entrance animation for
+   users who've requested reduced motion.
+   The mobile panel's open/close transition
+   is left intact — it's functional state
+   feedback, not decorative motion.
+-------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .navbar {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}

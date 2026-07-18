@@ -1,0 +1,199 @@
+/* ============================================
+   IngredientTimeline.module.css
+   Part 4 — connected journey timeline.
+   Horizontal on desktop, vertical on mobile.
+   Progress line "draws" itself in sync with
+   each node's staggered reveal.
+============================================ */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3.5rem;
+  text-align: center;
+
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------
+   Eyebrow — same accent pattern as
+   EditorialHeading, ties the scenes
+   together visually.
+-------------------------------------- */
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accentLine {
+  width: 40px;
+  height: 2px;
+  background: var(--color-orange);
+}
+
+.eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+
+/* --------------------------------------
+   Timeline
+-------------------------------------- */
+.timeline {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+}
+
+/* Static track sits behind the animated progress line,
+   showing the full path at low opacity from the start. */
+.track {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-glass-border);
+}
+
+.progressLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(
+    90deg,
+    var(--color-orange) 0%,
+    var(--color-orange) 100%
+  );
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+
+.visible .progressLine {
+  transform: scaleX(1);
+}
+
+.stepList {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible .step {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------
+   Glowing dot per node
+-------------------------------------- */
+.dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--color-orange);
+  box-shadow: 0 0 0 4px var(--color-background-dark), 0 0 16px 4px var(--color-orange);
+}
+
+.stepLabel {
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--font-medium);
+  color:rgb(255, 255, 255);
+  white-space: nowrap;
+}
+
+/* ============================================
+   Responsive — vertical timeline on mobile
+============================================ */
+
+@media (max-width: 640px) {
+  .timeline {
+    max-width: 320px;
+  }
+
+  .track {
+    top: 0;
+    bottom: 0;
+    left: 7px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .progressLine {
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      var(--color-orange) 0%,
+      var(--color-orange) 100%
+    );
+    transform-origin: top center;
+    transform: scaleY(0);
+  }
+
+  .visible .progressLine {
+    transform: scaleY(1);
+  }
+
+  .stepList {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+
+  .step {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.25rem;
+  }
+}
+
+/* --------------------------------------
+   Reduced motion
+-------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .wrapper,
+  .step,
+  .progressLine {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

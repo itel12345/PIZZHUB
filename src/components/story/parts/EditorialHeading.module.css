@@ -1,0 +1,97 @@
+/* ============================================
+   EditorialHeading.module.css
+   Part 1 — large editorial opening statement.
+   Blur + fade + slide-up reveal on scroll.
+============================================ */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+  max-width: 900px;
+
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(8px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* --------------------------------------
+   Accent row — small orange marker that
+   precedes the huge headline, per brief.
+-------------------------------------- */
+.accentRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accentLine {
+  width: 40px;
+  height: 2px;
+  background: var(--color-orange);
+}
+
+.accentLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+
+/* --------------------------------------
+   Headline
+   Fluid clamp scale, extending beyond the
+   existing --text-5xl ceiling for a true
+   "huge editorial" moment — same clamp
+   approach as the rest of the type system,
+   just a larger range.
+-------------------------------------- */
+.heading {
+  font-size: clamp(2.75rem, 3rem + 4vw, 7rem);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.03em;
+  color: #dcdada; 
+}
+
+/* --------------------------------------
+   Supporting paragraph
+-------------------------------------- */
+.paragraph {
+  font-size: var(--text-lg);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  max-width: 56ch;
+}
+
+@media (max-width: 640px) {
+  .heading {
+    letter-spacing: -0.02em;
+  }
+}
+
+/* --------------------------------------
+   Reduced motion — reveal instantly,
+   no blur/slide/fade animation.
+-------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .wrapper {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
