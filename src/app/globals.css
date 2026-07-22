@@ -1,36 +1,45 @@
 @import "tailwindcss";
 
 /* ============================================
-   Layer 1 — Design Tokens
-============================================ */
+   Layer 1 — Design Tokens (Single-Accent Dark Luxury)
+   ============================================ */
 :root {
-  --color-background: #060608;
-  --color-surface: #12131a;
+  /* Base Colors - True, clean premium black canvas */
+  --color-background: #060608; /* Obsidian Velvet Black (Deep, clean, and professional) */
+  --color-surface: #12131A;    /* Dark Slate (For nested cards, menus, and clean structure) */
 
-  --color-text: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-text-inverse: #060608;
+  /* Premium High-Contrast Typography */
+  --color-text: #F8FAFC;           /* Clean Crisp Off-White (Max readability against dark backgrounds) */
+  --color-text-secondary: #94A3B8; /* Steel Gray (For secondary descriptions and subheaders) */
+  --color-text-inverse: #060608;   /* Deep black text color to place over bright buttons */
 
-  --color-glass: rgba(255, 255, 255, 0.04);
-  --color-glass-border: rgba(255, 255, 255, 0.08);
+  /* Structural Layering Tones */
+  --color-glass: rgba(255, 255, 255, 0.04);        /* Smooth frosted glass window layer */
+  --color-glass-border: rgba(255, 255, 255, 0.08); /* Clean, ultra-thin border stroke */
 
-  --color-orange: #ff7a00;
+  /* Single Brand Accent Orange only, by design: red/orange/yellow are the proven "appetite trigger" colors in food branding, and a single restrained accent reads far more premium/editorial than a multi-color palette. Every Story Experience component already uses only this token — this file now matches that decision. */
+  --color-orange: #FF7A00; /* Melted Cheddar (Primary brand accent, used everywhere) */
 
-  /* Reduced glow values for better mobile performance */
-  --glow-blur-sm: 24px;
-  --glow-blur-md: 40px;
-  --glow-blur-lg: 64px;
-  --glow-blur-xl: 80px;
+  /* --color-blue / --color-purple / --color-red intentionally removed from active use. If you still need them for something unrelated to the brand accent system (e.g. a status/error color in a form), reintroduce a single one deliberately rather than restoring the full four-color set. */
 
-  --glow-opacity-subtle: 0.08;
-  --glow-opacity-medium: 0.16;
-  --glow-opacity-strong: 0.28;
+  /* Glow Blur */
+  --glow-blur-sm: 40px;
+  --glow-blur-md: 80px;
+  --glow-blur-lg: 120px;
+  --glow-blur-xl: 160px;
 
-  --glow-size-sm: 180px;
-  --glow-size-md: 280px;
-  --glow-size-lg: 420px;
-  --glow-size-xl: 520px;
+  /* Glow Opacity - Dialed in for a soft, restrained single-color glow */
+  --glow-opacity-subtle: 0.15;
+  --glow-opacity-medium: 0.28;
+  --glow-opacity-strong: 0.42;
 
+  /* Glow Size */
+  --glow-size-sm: 200px;
+  --glow-size-md: 400px;
+  --glow-size-lg: 650px;
+  --glow-size-xl: 900px;
+
+  /* Typography Scale */
   --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
   --text-sm: clamp(0.875rem, 0.82rem + 0.25vw, 0.9375rem);
   --text-base: clamp(1rem, 0.95rem + 0.3vw, 1.0625rem);
@@ -41,11 +50,13 @@
   --text-4xl: clamp(2.25rem, 1.85rem + 2vw, 3rem);
   --text-5xl: clamp(2.75rem, 2.1rem + 3vw, 3.75rem);
 
+  /* Font Weights */
   --font-regular: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
 
+  /* Line Heights */
   --leading-tight: 1.15;
   --leading-snug: 1.35;
   --leading-normal: 1.6;
@@ -53,11 +64,8 @@
 
 /* ============================================
    Layer 2 — Reset
-============================================ */
-
-*,
-*::before,
-*::after {
+   ============================================ */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -75,16 +83,16 @@ body {
   color: var(--color-text);
   font-family: var(--font-geist-sans), sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
   position: relative;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 img {
-  display: block;
   max-width: 100%;
+  display: block;
 }
 
 a {
@@ -94,8 +102,8 @@ a {
 
 button {
   font: inherit;
-  border: none;
   background: none;
+  border: none;
   color: inherit;
   cursor: pointer;
 }
@@ -107,50 +115,24 @@ button {
 
 /* ============================================
    Layer 3 — Typography
-============================================ */
-
-code,
-pre,
-kbd,
-samp {
+   ============================================ */
+code, pre, kbd, samp {
   font-family: var(--font-geist-mono), monospace;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
+  font-weight: var(--font-semibold);
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
-  font-weight: var(--font-semibold);
 }
 
-h1 {
-  font-size: var(--text-5xl);
-}
-
-h2 {
-  font-size: var(--text-4xl);
-}
-
-h3 {
-  font-size: var(--text-3xl);
-}
-
-h4 {
-  font-size: var(--text-2xl);
-}
-
-h5 {
-  font-size: var(--text-xl);
-}
-
-h6 {
-  font-size: var(--text-lg);
-}
+h1 { font-size: var(--text-5xl); }
+h2 { font-size: var(--text-4xl); }
+h3 { font-size: var(--text-3xl); }
+h4 { font-size: var(--text-2xl); }
+h5 { font-size: var(--text-xl); }
+h6 { font-size: var(--text-lg); }
 
 p {
   font-size: var(--text-base);
@@ -162,9 +144,8 @@ small {
 }
 
 /* ============================================
-   Layer 4 — Background Glow
-============================================ */
-
+   Layer 4 — Background Glow (Single-Accent)
+   ============================================ */
 .glow-container {
   position: fixed;
   inset: 0;
@@ -175,18 +156,18 @@ small {
 
 .glow {
   position: absolute;
+  border-radius: 999px;
   width: var(--glow-size-lg);
   height: var(--glow-size-lg);
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--color-orange) 0%, transparent 72%);
-  filter: blur(var(--glow-blur-lg));
+  filter: blur(var(--glow-blur-xl));
   opacity: var(--glow-opacity-medium);
-  will-change: transform;
+  background: radial-gradient(circle, var(--color-orange) 0%, transparent 70%);
 }
 
 .glow-one {
-  top: -12%;
+  top: -15%;
   left: -10%;
+  opacity: var(--glow-opacity-strong);
 }
 
 .glow-two {
@@ -206,42 +187,83 @@ small {
 }
 
 .glow-four {
-  bottom: -12%;
+  bottom: -15%;
   right: -10%;
+  opacity: var(--glow-opacity-medium);
 }
 
-/* ============================================
-   Mobile Performance
-============================================ */
+/* =======================================================
+   Layer 5 — Global CSS-Only Scroll Effects
+   ======================================================= */
 
-@media (max-width: 768px) {
-  .glow {
-    filter: blur(48px);
-    opacity: 0.12;
-  }
-
-  .glow-one,
-  .glow-four {
-    width: 320px;
-    height: 320px;
-  }
-
-  .glow-two,
-  .glow-three {
-    width: 220px;
-    height: 220px;
-  }
+/* Top scroll-progress bar. This one is genuinely fine as a document-wide
+   effect: animation-timeline: scroll(root) tracks *overall page scroll*,
+   which is exactly what a progress bar is supposed to represent. */
+@keyframes growProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--color-orange);
+  z-index: 9999;
+  transform-origin: 0 50%;
+  animation: growProgress auto linear both;
+  animation-timeline: scroll(root);
+}
+
+/*
+  Per-image "scroll spin" effect — OPT-IN ONLY via `.scroll-spin`.
+
+  This used to be a blanket `main img, section img` selector, which
+  silently attached a scroll-driven rotate+scale animation to *every*
+  <img> on *every* page — including every next/image rendered by
+  PizzaCard, PizzaGallery, MenuHero, etc. That's what made scrolling feel
+  "broken": every image on the page shared one transform value driven by
+  the *whole document's* scroll position (scroll(root)), rather than each
+  image animating individually as it entered view — so scrolling anywhere
+  on, say, /menu snapped every pizza card image at once, and it fought
+  with each card's own hover-zoom transform.
+
+  Fixed by:
+    1. Scoping to an explicit opt-in class instead of every <img>, so
+       new images (menu cards, pizza details gallery, etc.) are
+       unaffected unless you deliberately add the class.
+    2. Using `view()` instead of `scroll(root)` — `entry`/`exit` in
+       animation-range only mean "as this element scrolls into/out of
+       view" when paired with a per-element view-progress timeline;
+       scroll(root) has no concept of an individual element's position,
+       which is why every image was moving in lockstep before.
+
+  Add class="scroll-spin" only to the specific image(s) you actually want
+  this on (e.g. the Story Experience showcase image) — do not put it back
+  on a blanket `img` selector.
+*/
+@keyframes scrollPizzaSpin {
+  from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1.1) rotate(25deg); }
+}
+
+.scroll-spin {
+  animation: scrollPizzaSpin auto linear both;
+  animation-timeline: view();
+  animation-range: entry 0% exit 80%;
+}
+
+/* --------------------------------------
+   Reduced Motion
+   The scroll-spin effect is decorative, unlike the progress bar (which
+   is functional scroll feedback) — disable it for users who've asked
+   for reduced motion.
+-------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
+  .scroll-spin {
+    animation: none;
   }
 }
