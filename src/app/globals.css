@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* ==========================================================================
+/* ============================================
    Layer 1 — Design Tokens (Single-Accent Dark Luxury)
-   ========================================================================== */
+   ============================================ */
 :root {
   /* Base Colors - True, clean premium black canvas */
   --color-background: #060608; /* Obsidian Velvet Black (Deep, clean, and professional) */
@@ -17,8 +17,10 @@
   --color-glass: rgba(255, 255, 255, 0.04);        /* Smooth frosted glass window layer */
   --color-glass-border: rgba(255, 255, 255, 0.08); /* Clean, ultra-thin border stroke */
 
-  /* Single Brand Accent Orange only, by design */
+  /* Single Brand Accent Orange only, by design: red/orange/yellow are the proven "appetite trigger" colors in food branding, and a single restrained accent reads far more premium/editorial than a multi-color palette. Every Story Experience component already uses only this token — this file now matches that decision. */
   --color-orange: #FF7A00; /* Melted Cheddar (Primary brand accent, used everywhere) */
+
+  /* --color-blue / --color-purple / --color-red intentionally removed from active use. If you still need them for something unrelated to the brand accent system (e.g. a status/error color in a form), reintroduce a single one deliberately rather than restoring the full four-color set. */
 
   /* Glow Blur */
   --glow-blur-sm: 40px;
@@ -60,9 +62,9 @@
   --leading-normal: 1.6;
 }
 
-/* ==========================================================================
+/* ============================================
    Layer 2 — Reset
-   ========================================================================== */
+   ============================================ */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -111,9 +113,9 @@ button {
   color: var(--color-text-inverse);
 }
 
-/* ==========================================================================
+/* ============================================
    Layer 3 — Typography
-   ========================================================================== */
+   ============================================ */
 code, pre, kbd, samp {
   font-family: var(--font-geist-mono), monospace;
 }
@@ -141,9 +143,9 @@ small {
   color: var(--color-text-secondary);
 }
 
-/* ==========================================================================
+/* ============================================
    Layer 4 — Background Glow (Single-Accent)
-   ========================================================================== */
+   ============================================ */
 .glow-container {
   position: fixed;
   inset: 0;
@@ -188,4 +190,41 @@ small {
   bottom: -15%;
   right: -10%;
   opacity: var(--glow-opacity-medium);
+}
+
+/* =======================================================
+   Layer 5 — Global CSS-Only Scroll Effects
+   ======================================================= */
+/* Animation for the Top Progress Indicator */
+@keyframes growProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Injects the high-end orange scrolling bar globally */
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--color-orange);
+  z-index: 9999;
+  transform-origin: 0 50%;
+  animation: growProgress auto linear both;
+  animation-timeline: scroll(root);
+}
+
+/* Animation to rotate images slowly as users scroll down */
+@keyframes scrollPizzaSpin {
+  from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1.1) rotate(25deg); }
+}
+
+/* Dynamically hooks onto any image tag on your website automatically */
+main img, section img {
+  animation: scrollPizzaSpin auto linear both;
+  animation-timeline: scroll(root);
+  animation-range: entry 0% exit 80%;
 }
