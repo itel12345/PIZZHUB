@@ -1,45 +1,36 @@
 @import "tailwindcss";
 
 /* ============================================
-   Layer 1 — Design Tokens (Single-Accent Dark Luxury)
-   ============================================ */
+   Layer 1 — Design Tokens
+============================================ */
 :root {
-  /* Base Colors - True, clean premium black canvas */
-  --color-background: #060608; /* Obsidian Velvet Black (Deep, clean, and professional) */
-  --color-surface: #12131A;    /* Dark Slate (For nested cards, menus, and clean structure) */
+  --color-background: #060608;
+  --color-surface: #12131a;
 
-  /* Premium High-Contrast Typography */
-  --color-text: #F8FAFC;           /* Clean Crisp Off-White (Max readability against dark backgrounds) */
-  --color-text-secondary: #94A3B8; /* Steel Gray (For secondary descriptions and subheaders) */
-  --color-text-inverse: #060608;   /* Deep black text color to place over bright buttons */
+  --color-text: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-inverse: #060608;
 
-  /* Structural Layering Tones */
-  --color-glass: rgba(255, 255, 255, 0.04);        /* Smooth frosted glass window layer */
-  --color-glass-border: rgba(255, 255, 255, 0.08); /* Clean, ultra-thin border stroke */
+  --color-glass: rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
 
-  /* Single Brand Accent Orange only, by design: red/orange/yellow are the proven "appetite trigger" colors in food branding, and a single restrained accent reads far more premium/editorial than a multi-color palette. Every Story Experience component already uses only this token — this file now matches that decision. */
-  --color-orange: #FF7A00; /* Melted Cheddar (Primary brand accent, used everywhere) */
+  --color-orange: #ff7a00;
 
-  /* --color-blue / --color-purple / --color-red intentionally removed from active use. If you still need them for something unrelated to the brand accent system (e.g. a status/error color in a form), reintroduce a single one deliberately rather than restoring the full four-color set. */
+  /* Reduced glow values for better mobile performance */
+  --glow-blur-sm: 24px;
+  --glow-blur-md: 40px;
+  --glow-blur-lg: 64px;
+  --glow-blur-xl: 80px;
 
-  /* Glow Blur */
-  --glow-blur-sm: 40px;
-  --glow-blur-md: 80px;
-  --glow-blur-lg: 120px;
-  --glow-blur-xl: 160px;
+  --glow-opacity-subtle: 0.08;
+  --glow-opacity-medium: 0.16;
+  --glow-opacity-strong: 0.28;
 
-  /* Glow Opacity - Dialed in for a soft, restrained single-color glow */
-  --glow-opacity-subtle: 0.15;
-  --glow-opacity-medium: 0.28;
-  --glow-opacity-strong: 0.42;
+  --glow-size-sm: 180px;
+  --glow-size-md: 280px;
+  --glow-size-lg: 420px;
+  --glow-size-xl: 520px;
 
-  /* Glow Size */
-  --glow-size-sm: 200px;
-  --glow-size-md: 400px;
-  --glow-size-lg: 650px;
-  --glow-size-xl: 900px;
-
-  /* Typography Scale */
   --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
   --text-sm: clamp(0.875rem, 0.82rem + 0.25vw, 0.9375rem);
   --text-base: clamp(1rem, 0.95rem + 0.3vw, 1.0625rem);
@@ -50,13 +41,11 @@
   --text-4xl: clamp(2.25rem, 1.85rem + 2vw, 3rem);
   --text-5xl: clamp(2.75rem, 2.1rem + 3vw, 3.75rem);
 
-  /* Font Weights */
   --font-regular: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
 
-  /* Line Heights */
   --leading-tight: 1.15;
   --leading-snug: 1.35;
   --leading-normal: 1.6;
@@ -64,8 +53,11 @@
 
 /* ============================================
    Layer 2 — Reset
-   ============================================ */
-*, *::before, *::after {
+============================================ */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -83,16 +75,16 @@ body {
   color: var(--color-text);
   font-family: var(--font-geist-sans), sans-serif;
   min-height: 100vh;
-  position: relative;
   overflow-x: hidden;
+  position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 img {
-  max-width: 100%;
   display: block;
+  max-width: 100%;
 }
 
 a {
@@ -102,8 +94,8 @@ a {
 
 button {
   font: inherit;
-  background: none;
   border: none;
+  background: none;
   color: inherit;
   cursor: pointer;
 }
@@ -115,24 +107,50 @@ button {
 
 /* ============================================
    Layer 3 — Typography
-   ============================================ */
-code, pre, kbd, samp {
+============================================ */
+
+code,
+pre,
+kbd,
+samp {
   font-family: var(--font-geist-mono), monospace;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--color-text);
-  font-weight: var(--font-semibold);
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
+  font-weight: var(--font-semibold);
 }
 
-h1 { font-size: var(--text-5xl); }
-h2 { font-size: var(--text-4xl); }
-h3 { font-size: var(--text-3xl); }
-h4 { font-size: var(--text-2xl); }
-h5 { font-size: var(--text-xl); }
-h6 { font-size: var(--text-lg); }
+h1 {
+  font-size: var(--text-5xl);
+}
+
+h2 {
+  font-size: var(--text-4xl);
+}
+
+h3 {
+  font-size: var(--text-3xl);
+}
+
+h4 {
+  font-size: var(--text-2xl);
+}
+
+h5 {
+  font-size: var(--text-xl);
+}
+
+h6 {
+  font-size: var(--text-lg);
+}
 
 p {
   font-size: var(--text-base);
@@ -144,8 +162,9 @@ small {
 }
 
 /* ============================================
-   Layer 4 — Background Glow (Single-Accent)
-   ============================================ */
+   Layer 4 — Background Glow
+============================================ */
+
 .glow-container {
   position: fixed;
   inset: 0;
@@ -156,18 +175,18 @@ small {
 
 .glow {
   position: absolute;
-  border-radius: 999px;
   width: var(--glow-size-lg);
   height: var(--glow-size-lg);
-  filter: blur(var(--glow-blur-xl));
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-orange) 0%, transparent 72%);
+  filter: blur(var(--glow-blur-lg));
   opacity: var(--glow-opacity-medium);
-  background: radial-gradient(circle, var(--color-orange) 0%, transparent 70%);
+  will-change: transform;
 }
 
 .glow-one {
-  top: -15%;
+  top: -12%;
   left: -10%;
-  opacity: var(--glow-opacity-strong);
 }
 
 .glow-two {
@@ -187,44 +206,42 @@ small {
 }
 
 .glow-four {
-  bottom: -15%;
+  bottom: -12%;
   right: -10%;
-  opacity: var(--glow-opacity-medium);
 }
 
-/* =======================================================
-   Layer 5 — Global CSS-Only Scroll Effects
-   ======================================================= */
-/* Animation for the Top Progress Indicator */
-@keyframes growProgress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+/* ============================================
+   Mobile Performance
+============================================ */
+
+@media (max-width: 768px) {
+  .glow {
+    filter: blur(48px);
+    opacity: 0.12;
+  }
+
+  .glow-one,
+  .glow-four {
+    width: 320px;
+    height: 320px;
+  }
+
+  .glow-two,
+  .glow-three {
+    width: 220px;
+    height: 220px;
+  }
 }
 
-/* Injects the high-end orange scrolling bar globally */
-html::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: var(--color-orange);
-  z-index: 9999;
-  transform-origin: 0 50%;
-  animation: growProgress auto linear both;
-  animation-timeline: scroll(root);
-}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 
-/* Animation to rotate images slowly as users scroll down */
-@keyframes scrollPizzaSpin {
-  from { transform: scale(1) rotate(0deg); }
-  to { transform: scale(1.1) rotate(25deg); }
-}
-
-/* Dynamically hooks onto any image tag on your website automatically */
-main img, section img {
-  animation: scrollPizzaSpin auto linear both;
-  animation-timeline: scroll(root);
-  animation-range: entry 0% exit 80%;
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
