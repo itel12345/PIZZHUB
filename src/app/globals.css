@@ -191,39 +191,41 @@ small {
 }
 
 /* ==========================================================================
-   Layer 5 — Global CSS-Only Scroll Effects
+   Layer 5 — Global CSS Scroll Effects (Desktop Only)
    ========================================================================== */
-/* Animation for the Top Progress Indicator */
 @keyframes growProgress {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
 
-/* Injects the high-end orange scrolling bar globally */
-html::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: var(--color-orange);
-  z-index: 9999;
-  transform-origin: 0 50%;
-  animation: growProgress auto linear both;
-  animation-timeline: scroll(root);
-}
-
-/* Animation to rotate images slowly as users scroll down */
 @keyframes scrollPizzaSpin {
   from { transform: scale(1) rotate(0deg); }
   to { transform: scale(1.1) rotate(25deg); }
 }
 
-/* FIX: Changed from general 'main img' to an explicit class layout. 
-   This safely protects menu layouts while preserving your animation where desired. */
-.pizza-spin {
-  animation: scrollPizzaSpin auto linear both;
-  animation-timeline: scroll(root);
-  animation-range: entry 0% exit 80%;
+/* FIX: Wrapped inside a media query block. 
+   Mobile devices bypass this entirely, making scrolling completely stable! */
+@media (min-width: 1024px) {
+  
+  /* Injects the high-end orange scrolling bar globally */
+  html::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--color-orange);
+    z-index: 9999;
+    transform-origin: 0 50%;
+    animation: growProgress auto linear both;
+    animation-timeline: scroll(root);
+  }
+
+  /* Only run the rotating wheel animation on desktop structures */
+  .pizza-spin {
+    animation: scrollPizzaSpin auto linear both;
+    animation-timeline: scroll(root);
+    animation-range: entry 0% exit 80%;
+  }
 }
