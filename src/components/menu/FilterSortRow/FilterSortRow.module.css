@@ -1,0 +1,61 @@
+/* src/components/menu/FilterSortRow/FilterSortRow.module.css */
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--color-glass-border);
+}
+
+.count {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sortControl {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sortLabel {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-secondary);
+}
+
+.select {
+  appearance: none;
+  background: black;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  font-size: var(--text-sm, 0.875rem);
+  padding: 0.55rem 2rem 0.55rem 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.select:hover,
+.select:focus-visible {
+  border-color: var(--color-orange);
+  outline: none;
+}
+
+.chevron {
+  position: absolute;
+  right: 0.7rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+@media (max-width: 30rem) {
+  .row {
+    flex-wrap: wrap;
+  }
+}

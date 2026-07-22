@@ -1,0 +1,80 @@
+/* src/components/layout/NavActions/MobileNavLinks.module.css */
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  /* No padding here on purpose — this renders inside Navbar's
+     .mobilePanelOpen, which already provides 1.25rem 1.5rem. */
+}
+
+.primaryList,
+.secondaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-glass-border);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.6rem;
+  color: var(--color-text);
+  font-size: var(--text-base, 1rem);
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  background: var(--color-glass);
+  outline: none;
+}
+
+.count {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--color-orange);
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.signUpLink {
+  display: block;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.6rem;
+  text-align: center;
+  background: var(--color-orange);
+  color: var(--color-text-inverse);
+  font-size: var(--text-base, 1rem);
+  font-weight: 600;
+}
+
+.logoutButton {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.6rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base, 1rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logoutButton:hover,
+.logoutButton:focus-visible {
+  background: var(--color-glass);
+  color: var(--color-text);
+  outline: none;
+}

@@ -1,0 +1,66 @@
+/* src/components/menu/SearchBar/SearchBar.module.css */
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 30rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.wrapper:focus-within {
+  border-color: var(--color-orange);
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-inline-start: 1.125rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text);
+  font-size: var(--text-base, 1rem);
+  padding: 0.9rem 0.875rem;
+  min-height: 3rem;
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-inline-end: 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.clearButton:hover,
+.clearButton:focus-visible {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.clearButton svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}

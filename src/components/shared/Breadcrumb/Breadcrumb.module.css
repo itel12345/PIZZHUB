@@ -1,0 +1,44 @@
+/* src/components/shared/Breadcrumb/Breadcrumb.module.css */
+
+.breadcrumb {
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.4rem;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.link {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--color-orange);
+}
+
+.current {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.separator {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  font-size: var(--text-xs, 0.75rem);
+}

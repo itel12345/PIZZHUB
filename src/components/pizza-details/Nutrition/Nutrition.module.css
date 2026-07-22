@@ -1,0 +1,59 @@
+/* src/components/pizza-details/Nutrition/Nutrition.module.css */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heading {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.disclaimer {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--color-glass-border);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  margin: 0;
+}
+
+@media (min-width: 30rem) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem 1.1rem;
+  background: var(--color-surface);
+}
+
+.label {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.value {
+  margin: 0;
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-text);
+}

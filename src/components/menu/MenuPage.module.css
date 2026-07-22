@@ -1,0 +1,39 @@
+/* src/components/menu/MenuPage.module.css */
+
+.page {
+  /* No background here on purpose — body already carries
+     --color-background, and painting an opaque one on this wrapper
+     would sit on top of the fixed .glow-container from globals.css
+     and block the ambient orange glow that shows through on every
+     other section (Hero, Story Experience, Footer). */
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 48rem) {
+  .container {
+    padding-inline: 2.5rem;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 48rem) {
+  .controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}

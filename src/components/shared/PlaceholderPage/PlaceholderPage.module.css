@@ -1,0 +1,45 @@
+/* src/components/shared/PlaceholderPage/PlaceholderPage.module.css */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: clamp(5rem, 12vw, 9rem) 1.25rem;
+}
+
+.eyebrow {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+
+.title {
+  font-size: var(--text-3xl, 2rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.description {
+  font-size: var(--text-base, 1rem);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.link {
+  margin-top: 0.5rem;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--color-orange);
+  transition: opacity 0.2s ease;
+}
+
+.link:hover {
+  opacity: 0.75;
+}

@@ -1,0 +1,35 @@
+/* src/components/pizza-details/PizzaGallery/PizzaGallery.module.css */
+
+.gallery {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.gallery:hover .image {
+  transform: scale(1.03);
+}
+
+@media (min-width: 64rem) {
+  .gallery {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+  }
+  .gallery:hover .image {
+    transform: none;
+  }
+}

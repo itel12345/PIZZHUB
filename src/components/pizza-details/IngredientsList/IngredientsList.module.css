@@ -1,0 +1,38 @@
+/* src/components/pizza-details/IngredientsList/IngredientsList.module.css */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.heading {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chip {
+  padding: 0.6rem 1.15rem;
+  border-radius: 999px;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-text);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  transition: border-color 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--color-orange);
+}

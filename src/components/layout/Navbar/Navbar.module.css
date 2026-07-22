@@ -56,74 +56,29 @@
 
 /* --------------------------------------
    Primary Links
+   Base row styling for NavbarLinks.
+   The 1024px/mobile media queries further
+   down already referenced `.links` before
+   this component existed — this is what
+   they were written for.
 -------------------------------------- */
-
-/* Wraps the desktop instance of NavbarLinks so it can be
-   hidden at the mobile breakpoint without touching the
-   NavbarLinks component itself (which is reused again inside
-   the mobile panel below). */
-.desktopLinks {
-  display: flex;
-}
-
 .links {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .link {
-  position: relative;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--color-text-secondary);
   white-space: nowrap;
-  cursor: pointer;
   transition: color 0.2s ease;
 }
 
-/* Animated underline — grows in on hover/active via
-   transform (GPU-accelerated, no layout reflow) rather
-   than animating width. */
-.link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 100%;
-  height: 1px;
-  background: var(--color-orange);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.2s ease;
-}
-
-.link:hover {
+.link:hover,
+.link[aria-current="page"] {
   color: var(--color-text);
-}
-
-.link:hover::after {
-  transform: scaleX(1);
-}
-
-/* Keyboard-only focus ring — :focus-visible avoids showing
-   the outline on mouse clicks, only on Tab navigation. */
-.link:focus-visible {
-  outline: 2px solid var(--color-orange);
-  outline-offset: 4px;
-  border-radius: 4px;
-  color: var(--color-text);
-}
-
-/* Active (current page) link — permanently shows the same
-   treatment as hover, so "hovered" and "here" share one
-   consistent visual language. */
-.linkActive {
-  color: var(--color-text);
-}
-
-.linkActive::after {
-  transform: scaleX(1);
 }
 
 /* --------------------------------------
@@ -188,6 +143,17 @@
   border-color: var(--color-text-secondary);
 }
 
+.SignupButton {
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-glass-border);
+}
+
+.SignupButton:hover {
+  background: var(--color-glass);
+  border-color: var(--color-text-secondary);
+}
+
 .cta {
   color: var(--color-text-inverse);
   background: var(--color-orange);
@@ -234,8 +200,11 @@
    Mobile Panel
    Collapsible dropdown shown below the bar
    when the hamburger is toggled open.
-   Reuses NavbarLinks, NavbarLoginButton,
-   and NavbarCTA — no duplicate components.
+   Renders <MobileNavLinks />, its own
+   component (Home/Menu/About/Contact,
+   then Favorites/Cart with counts, then
+   the auth-aware Profile+Logout or
+   Login+Sign Up section).
    Animated via max-height/opacity rather
    than display, since display can't
    transition smoothly.
@@ -271,22 +240,10 @@
   pointer-events: auto;
 }
 
-.mobilePanel .links {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25rem;
-}
-
-.mobilePanelActions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.mobilePanel .loginButton,
-.mobilePanel .cta {
-  width: 100%;
-}
+/* NOTE: the mobile panel now renders <MobileNavLinks /> (its own component,
+   styled by MobileNavLinks.module.css) instead of duplicating
+   NavbarLinks/NavbarLoginButton/NavbarCTA here, so the .links/.loginButton/
+   .cta overrides that used to live in this block are no longer needed. */
 
 /* ============================================
    Responsive Breakpoints

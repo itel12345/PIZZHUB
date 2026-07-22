@@ -1,0 +1,51 @@
+/* src/components/menu/PizzaGrid/PizzaGrid.module.css */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.75rem;
+  padding-block: 2rem;
+}
+
+@media (min-width: 40rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 90rem) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding-block: 5rem;
+  border: 1px dashed var(--color-glass-border);
+  border-radius: 0.875rem;
+  margin-block: 2rem;
+}
+
+.emptyTitle {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

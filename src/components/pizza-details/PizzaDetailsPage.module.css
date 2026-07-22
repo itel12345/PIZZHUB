@@ -1,0 +1,50 @@
+/* src/components/pizza-details/PizzaDetailsPage.module.css */
+
+.page {
+  min-height: 100vh;
+  /* No opaque background here on purpose — same reasoning as MenuPage:
+     body already carries --color-background, and the fixed .glow-container
+     from globals.css should still show through underneath. */
+}
+
+.container {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 48rem) {
+  .container {
+    padding-inline: 2.5rem;
+  }
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 4.5rem);
+}
+
+@media (min-width: 64rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 6vw, 4.5rem);
+  padding-bottom: clamp(3rem, 6vw, 4.5rem);
+  max-width: 48rem;
+}
