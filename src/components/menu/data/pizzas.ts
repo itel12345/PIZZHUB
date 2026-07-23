@@ -33,7 +33,7 @@ export const pizzas: Pizza[] = [
     category: "Classic",
     price: 85,
     rating: 4.8,
-    image: "/img/menu/margherita.jpg",
+    image: "/img/img_1-removebg-preview.png",
     addedAt: 1,
   },
   {

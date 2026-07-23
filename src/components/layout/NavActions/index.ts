@@ -7,6 +7,7 @@
 // deleted; it's kept here only if you want the all-in-one version for
 // some other entry point.
 export { default as MobileNavLinks } from "./MobileNavLinks";
+export { MobileDrawer } from "./MobileDrawer";
 export { default as FavoritesButton } from "./FavoritesButton";
 export { default as CartButton } from "./CartButton";
 export { default as AvatarButton } from "./AvatarButton";

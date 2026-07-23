@@ -193,77 +193,15 @@ small {
 }
 
 /* =======================================================
-   Layer 5 — Global CSS-Only Scroll Effects
+   Layer 5 — Global CSS-Only Scroll Effects — REMOVED
+
+   Used to contain a top scroll-progress bar (html::before,
+   animation-timeline: scroll(root)) and an opt-in .scroll-spin class
+   (animation-timeline: view()). Both used the CSS scroll-driven-
+   animations spec, which is newer/inconsistent across browsers and kept
+   causing friction — removed entirely rather than patched again. If you
+   want a scroll-progress bar or a scroll-triggered image effect later,
+   it's safer to implement it with a small JS scroll listener (or a
+   library like Framer Motion) than with animation-timeline, at least
+   until browser support is more uniform across your actual visitors.
    ======================================================= */
-
-/* Top scroll-progress bar. This one is genuinely fine as a document-wide
-   effect: animation-timeline: scroll(root) tracks *overall page scroll*,
-   which is exactly what a progress bar is supposed to represent. */
-@keyframes growProgress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-html::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: var(--color-orange);
-  z-index: 9999;
-  transform-origin: 0 50%;
-  animation: growProgress auto linear both;
-  animation-timeline: scroll(root);
-}
-
-/*
-  Per-image "scroll spin" effect — OPT-IN ONLY via `.scroll-spin`.
-
-  This used to be a blanket `main img, section img` selector, which
-  silently attached a scroll-driven rotate+scale animation to *every*
-  <img> on *every* page — including every next/image rendered by
-  PizzaCard, PizzaGallery, MenuHero, etc. That's what made scrolling feel
-  "broken": every image on the page shared one transform value driven by
-  the *whole document's* scroll position (scroll(root)), rather than each
-  image animating individually as it entered view — so scrolling anywhere
-  on, say, /menu snapped every pizza card image at once, and it fought
-  with each card's own hover-zoom transform.
-
-  Fixed by:
-    1. Scoping to an explicit opt-in class instead of every <img>, so
-       new images (menu cards, pizza details gallery, etc.) are
-       unaffected unless you deliberately add the class.
-    2. Using `view()` instead of `scroll(root)` — `entry`/`exit` in
-       animation-range only mean "as this element scrolls into/out of
-       view" when paired with a per-element view-progress timeline;
-       scroll(root) has no concept of an individual element's position,
-       which is why every image was moving in lockstep before.
-
-  Add class="scroll-spin" only to the specific image(s) you actually want
-  this on (e.g. the Story Experience showcase image) — do not put it back
-  on a blanket `img` selector.
-*/
-@keyframes scrollPizzaSpin {
-  from { transform: scale(1) rotate(0deg); }
-  to { transform: scale(1.1) rotate(25deg); }
-}
-
-.scroll-spin {
-  animation: scrollPizzaSpin auto linear both;
-  animation-timeline: view();
-  animation-range: entry 0% exit 80%;
-}
-
-/* --------------------------------------
-   Reduced Motion
-   The scroll-spin effect is decorative, unlike the progress bar (which
-   is functional scroll feedback) — disable it for users who've asked
-   for reduced motion.
--------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  .scroll-spin {
-    animation: none;
-  }
-}

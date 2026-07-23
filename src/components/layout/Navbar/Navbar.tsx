@@ -14,7 +14,7 @@ import FavoritesButton from "../NavActions/FavoritesButton";
 import CartButton from "../NavActions/CartButton";
 import AvatarButton from "../NavActions/AvatarButton";
 import MobileNavLinks from "../NavActions/MobileNavLinks";
-
+import { MobileDrawer } from "../NavActions/MobileDrawer";
 
 /**
  * Navbar
@@ -22,24 +22,25 @@ import MobileNavLinks from "../NavActions/MobileNavLinks";
  * Top-level navigation bar. Composes the logo, primary nav links, and the
  * auth-aware action group into a single glassmorphic bar.
  *
- * Auth-aware action group (desktop, in .authGroup):
+ * Desktop (.authGroup, unchanged from before this phase):
  *   Logged out -> Login, Sign Up, and Order Now (Order Now only on "/")
- *   Logged in  -> Favorites, Cart, Avatar (Order Now never shows once logged in —
- *                 the cart becomes the primary CTA at that point)
+ *   Logged in  -> Favorites, Cart, Avatar (Order Now never shows once logged in)
  *
- * "Order Now" is homepage-only because every other page already places the
- * customer inside the ordering flow (menu, cart, etc.) — the homepage hero
- * is the only place that still needs to prompt someone to start ordering.
+ * Mobile (Phase 4 redesign — .mobileOnly):
+ *   Logged out -> just the hamburger (no Login/Sign Up/Order Now in the bar —
+ *                 those live inside the drawer instead)
+ *   Logged in  -> Favorites, Cart, then the hamburger — permanently visible
+ *                 on every page once logged in, so the drawer itself never
+ *                 needs to repeat them
+ *
+ * Tapping the hamburger opens MobileDrawer, a left-side sliding panel
+ * (transform/opacity only) containing MobileNavLinks — Home/Menu/About/
+ * Contact/Profile plus the auth-aware bottom section. Favorites, Cart,
+ * and Order Now are deliberately never shown inside the drawer, since
+ * they're either already in the bar or belong only to the homepage hero.
  *
  * Auth state and cart/favorites counts are mocked via useAuthState /
  * useNavCounts for now (see those hooks for the real-data upgrade path).
- *
- * Fully responsive: desktop shows the inline nav and actions; tablet
- * reduces spacing; mobile hides the desktop nav/actions behind a hamburger
- * trigger that toggles a collapsible panel containing MobileNavLinks
- * (the full mobile link list, including Favorites/Cart counts and the
- * auth-aware bottom section). Menu open/close state is owned here since
- * this is the common parent of the trigger and the panel it controls.
  */
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,6 +75,12 @@ export default function Navbar() {
             )}
           </div>
           <div className={styles.mobileOnly}>
+            {isAuthenticated && user && (
+              <>
+                <FavoritesButton count={favoritesCount} />
+                <CartButton count={cartCount} />
+              </>
+            )}
             <MobileMenuButton
               isOpen={isMenuOpen}
               onToggle={() => setIsMenuOpen((open) => !open)}
@@ -82,12 +89,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div
-        id="mobile-nav-panel"
-        className={`${styles.mobilePanel} ${isMenuOpen ? styles.mobilePanelOpen : ""}`}
-      >
+      <MobileDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
         <MobileNavLinks onNavigate={() => setIsMenuOpen(false)} />
-      </div>
+      </MobileDrawer>
     </header>
   );
 }

@@ -168,9 +168,14 @@
    Mobile Trigger
    Hidden by default; shown only at the
    mobile breakpoint (see media query below).
+   Phase 4: also holds Favorites + Cart
+   (logged in only) before the hamburger —
+   equal spacing between all three.
 -------------------------------------- */
 .mobileOnly {
   display: none;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .menuButton {
@@ -197,53 +202,12 @@
 }
 
 /* --------------------------------------
-   Mobile Panel
-   Collapsible dropdown shown below the bar
-   when the hamburger is toggled open.
-   Renders <MobileNavLinks />, its own
-   component (Home/Menu/About/Contact,
-   then Favorites/Cart with counts, then
-   the auth-aware Profile+Logout or
-   Login+Sign Up section).
-   Animated via max-height/opacity rather
-   than display, since display can't
-   transition smoothly.
+   Mobile Panel — REMOVED (Phase 4)
+   The dropdown panel that used to live here (max-height/opacity
+   collapsible box) has been replaced by a left-side sliding drawer.
+   See src/components/layout/NavActions/MobileDrawer/MobileDrawer.module.css
+   for the overlay + panel styling now used instead.
 -------------------------------------- */
-.mobilePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-
-  max-width: 1200px;
-  margin: 0.75rem auto 0;
-  padding: 0 1.5rem;
-  border-radius: 1.5rem;
-
-  background: var(--color-glass);
-  border: 1px solid var(--color-glass-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-
-  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
-}
-
-.mobilePanelOpen {
-  max-height: 480px;
-  opacity: 1;
-  padding: 1.25rem 1.5rem;
-  pointer-events: auto;
-}
-
-/* NOTE: the mobile panel now renders <MobileNavLinks /> (its own component,
-   styled by MobileNavLinks.module.css) instead of duplicating
-   NavbarLinks/NavbarLoginButton/NavbarCTA here, so the .links/.loginButton/
-   .cta overrides that used to live in this block are no longer needed. */
 
 /* ============================================
    Responsive Breakpoints
