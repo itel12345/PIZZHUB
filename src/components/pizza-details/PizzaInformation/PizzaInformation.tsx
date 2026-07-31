@@ -3,7 +3,7 @@
 // Editorial identity block for the details page: category eyebrow, name,
 // premium badge, rating, price, and the full (unclamped) description.
 
-import type { Pizza } from "@/components/menu/data/pizzas";
+import type { Pizza } from "@/components/menu/hooks/useMenuFilters";
 import styles from "./PizzaInformation.module.css";
 
 interface PizzaInformationProps {

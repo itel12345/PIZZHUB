@@ -1,10 +1,11 @@
 // src/components/pizza-details/PizzaDetailsPage.tsx
 //
 // Top-level composition for a single pizza's details page. Pure UI —
-// reads the pizza from the static pizzas.ts data passed in by the route,
-// no database/API/Prisma involved yet (see src/app/menu/[id]/page.tsx).
+// reads the pizza (and the full pizza list, for RelatedPizzas) from
+// props passed in by the route, which now sources both from Postgres
+// via Prisma (see src/app/menu/[id]/page.tsx).
 
-import type { Pizza } from "@/components/menu/data/pizzas";
+import type { Pizza } from "@/components/menu/hooks/useMenuFilters";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { PizzaGallery } from "./PizzaGallery";
 import { PizzaInformation } from "./PizzaInformation";
@@ -17,9 +18,10 @@ import styles from "./PizzaDetailsPage.module.css";
 
 interface PizzaDetailsPageProps {
   pizza: Pizza;
+  pizzas: Pizza[];
 }
 
-export default function PizzaDetailsPage({ pizza }: PizzaDetailsPageProps) {
+export default function PizzaDetailsPage({ pizza, pizzas }: PizzaDetailsPageProps) {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -36,7 +38,12 @@ export default function PizzaDetailsPage({ pizza }: PizzaDetailsPageProps) {
 
           <div className={styles.heroInfo}>
             <PizzaInformation pizza={pizza} />
-            <PizzaActions pizzaId={pizza.id} pizzaName={pizza.name} />
+            <PizzaActions
+              pizzaId={pizza.id}
+              pizzaName={pizza.name}
+              pizzaImage={pizza.image}
+              pizzaPrice={pizza.price}
+            />
           </div>
         </div>
 
@@ -47,7 +54,7 @@ export default function PizzaDetailsPage({ pizza }: PizzaDetailsPageProps) {
         </div>
       </div>
 
-      <RelatedPizzas currentPizza={pizza} />
+      <RelatedPizzas currentPizza={pizza} pizzas={pizzas} />
     </div>
   );
 }

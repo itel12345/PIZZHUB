@@ -5,7 +5,7 @@
 "use client";
 
 import { CATEGORIES } from "../hooks/useMenuFilters";
-import type { PizzaCategory } from "../data/pizzas";
+import type { PizzaCategory } from "../hooks/useMenuFilters";
 import styles from "./CategoryFilters.module.css";
 
 interface CategoryFiltersProps {

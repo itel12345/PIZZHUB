@@ -1,28 +1,12 @@
 "use client";
 
 import { useMemo, useState, useCallback, useEffect } from "react";
+import type { Pizza, PizzaCategory } from "@/lib/pizza";
 
-export interface Pizza {
-  id: string;
-  dbId: number;
-  name: string;
-  description: string;
-  ingredients: string[];
-  category:
-    | "Classic"
-    | "Signature"
-    | "Spicy"
-    | "Vegetarian"
-    | "Desserts"
-    | "Drinks";
-  price: number;
-  rating: number;
-  image: string;
-  isPremium?: boolean;
-  addedAt: number;
-}
-
-export type PizzaCategory = Pizza["category"];
+// Re-exported so existing call sites (`import type { Pizza } from
+// "../hooks/useMenuFilters"`) keep working unchanged — the actual
+// definitions now live in src/lib/pizza.ts alongside the DB mapper.
+export type { Pizza, PizzaCategory };
 
 export type SortOption =
   | "recommended"

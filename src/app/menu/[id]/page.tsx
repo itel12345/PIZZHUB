@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "@/components/footer/Footer";
 import { prisma } from "@/lib/prisma";
+import { formatPizzaId, parsePizzaId, toPizzaDTO } from "@/lib/pizza";
 import { PizzaDetailsPage } from "@/components/pizza-details";
 
 interface PizzaPageProps {
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
   });
 
   return pizzas.map((pizza) => ({
-    id: pizza.id.toString(),
+    id: formatPizzaId(pizza.id),
   }));
 }
 
@@ -26,12 +27,16 @@ export async function generateMetadata({
   params,
 }: PizzaPageProps): Promise<Metadata> {
   const { id } = await params;
+  const dbId = parsePizzaId(id);
 
-  const pizza = await prisma.pizza.findUnique({
-    where: {
-      id: Number(id),
-    },
-  });
+  const pizza =
+    dbId === null
+      ? null
+      : await prisma.pizza.findUnique({
+          where: {
+            id: dbId,
+          },
+        });
 
   return {
     title: pizza
@@ -44,12 +49,24 @@ export default async function PizzaPage({
   params,
 }: PizzaPageProps) {
   const { id } = await params;
+  const dbId = parsePizzaId(id);
 
-  const pizza = await prisma.pizza.findUnique({
-    where: {
-      id: Number(id),
-    },
-  });
+  if (dbId === null) {
+    notFound();
+  }
+
+  const [pizza, allPizzas] = await Promise.all([
+    prisma.pizza.findUnique({
+      where: {
+        id: dbId,
+      },
+    }),
+    prisma.pizza.findMany({
+      orderBy: {
+        addedAt: "desc",
+      },
+    }),
+  ]);
 
   if (!pizza) {
     notFound();
@@ -60,7 +77,10 @@ export default async function PizzaPage({
       <Navbar />
 
       <main>
-        <PizzaDetailsPage pizza={pizza} />
+        <PizzaDetailsPage
+          pizza={toPizzaDTO(pizza)}
+          pizzas={allPizzas.map(toPizzaDTO)}
+        />
       </main>
 
       <Footer />
