@@ -1,19 +1,25 @@
-import Link from "next/link";
 import styles from "./Navbar.module.css";
 
 /**
- * NavbarSigninButton
+ * NavbarSignupButton
  *
- * Secondary action button linking to the future signin route.
- * This is a UI placeholder only — no authentication, form, or
- * backend logic is wired up here. Styled as a quiet glass
- * button so it stays visually subordinate to the primary
- * "Order Now" CTA.
+ * Secondary action button that opens AuthenticationModal on the Signup
+ * screen. No longer a route link — signup now happens entirely inside
+ * the modal, no page navigation. Same quiet glass styling as before,
+ * so it stays visually subordinate to the primary "Order Now" CTA.
  */
-export default function NavbarSignupButton() {
+interface NavbarSignupButtonProps {
+  onClick: () => void;
+}
+
+export default function NavbarSignupButton({ onClick }: NavbarSignupButtonProps) {
   return (
-    <Link href="/Register" className={`${styles.navButton} ${styles.SignupButton}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${styles.navButton} ${styles.SignupButton}`}
+    >
       Sign up
-    </Link>
+    </button>
   );
 }

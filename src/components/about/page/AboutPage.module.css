@@ -1,0 +1,57 @@
+.page {
+  /* Intentionally no background — .glow-container shows through,
+     consistent with every other page. */
+  min-height: 100vh;
+}
+
+/* SECTION 8 — Statistics */
+
+.stats {
+  padding: clamp(3rem, 6vw, 5rem) 1.5rem;
+}
+
+.statsGrid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding: 2rem 1rem;
+  border-radius: 1.25rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
+}
+
+.statValue {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

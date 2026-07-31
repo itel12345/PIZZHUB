@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "@/components/footer/Footer";
-import { PlaceholderPage } from "@/components/shared/PlaceholderPage";
+import { ContactPage } from "@/components/contact";
 
 export const metadata: Metadata = {
-  title: "Contact — PizzHub",
+  title: "Contact Us — PizzHub",
+  description: "Get in touch with the PizzHub team.",
 };
 
 export default function Contact() {
@@ -12,11 +13,7 @@ export default function Contact() {
     <>
       <Navbar />
       <main>
-        <PlaceholderPage
-          eyebrow="Contact"
-          title="This page is being plated."
-          description="Reach us through the details in the footer for now — a full contact page is coming soon."
-        />
+        <ContactPage />
       </main>
       <Footer />
     </>

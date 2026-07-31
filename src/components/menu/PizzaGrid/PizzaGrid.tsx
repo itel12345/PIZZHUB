@@ -2,9 +2,9 @@
 // Responsive card grid: 1 col mobile, 2 col tablet, 3–4 col desktop.
 // Renders an editorial empty state when a search/filter combination matches nothing.
 
-import type { Pizza } from "../data/pizzas";
 import PizzaCard from "../PizzaCard/PizzaCard";
 import styles from "./PizzaGrid.module.css";
+import type { Pizza } from "../hooks/useMenuFilters";
 
 interface PizzaGridProps {
   pizzas: Pizza[];

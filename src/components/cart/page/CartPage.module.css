@@ -1,0 +1,45 @@
+.page {
+  /* Intentionally no background — .glow-container shows through,
+     consistent with Menu/PizzaDetails/Favorites pages. */
+  min-height: 100vh;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem clamp(4rem, 8vw, 6rem);
+}
+
+.container {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.heading {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 22rem;
+  gap: 2rem;
+  align-items: start;
+}
+
+.itemsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summaryColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

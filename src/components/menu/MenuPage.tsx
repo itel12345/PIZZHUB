@@ -1,7 +1,3 @@
-// src/components/menu/MenuPage.tsx
-// Client component that owns menu-wide filter state and composes every
-// Menu-page part in order. UI/UX only — no cart, auth, or database logic.
-
 "use client";
 
 import MenuHero from "./MenuHero/MenuHero";
@@ -15,12 +11,14 @@ import styles from "./MenuPage.module.css";
 
 export default function MenuPage() {
   const {
+    loading,
     search,
     category,
     sort,
     results,
     totalCount,
     remaining,
+    hasMore,
     setSearch,
     setCategory,
     setSort,
@@ -33,15 +31,46 @@ export default function MenuPage() {
         <MenuHero />
 
         <div className={styles.controls}>
-          <SearchBar value={search} onChange={setSearch} />
-          <CategoryFilters active={category} onChange={setCategory} />
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+          />
+
+          <CategoryFilters
+            active={category}
+            onChange={setCategory}
+          />
         </div>
 
-        <FilterSortRow sort={sort} onChange={setSort} resultCount={totalCount} />
+        <FilterSortRow
+          sort={sort}
+          onChange={setSort}
+          resultCount={totalCount}
+        />
 
-        <PizzaGrid pizzas={results} />
+        {loading ? (
+          <div
+            style={{
+              padding: "5rem 0",
+              textAlign: "center",
+              fontSize: "1.05rem",
+              opacity: 0.7,
+            }}
+          >
+            Loading pizzas...
+          </div>
+        ) : (
+          <>
+            <PizzaGrid pizzas={results} />
 
-        <LoadMore onClick={loadMore} remaining={remaining} />
+            {hasMore && (
+              <LoadMore
+                onClick={loadMore}
+                remaining={remaining}
+              />
+            )}
+          </>
+        )}
       </div>
     </div>
   );

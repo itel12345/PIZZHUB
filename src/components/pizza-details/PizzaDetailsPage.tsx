@@ -36,7 +36,7 @@ export default function PizzaDetailsPage({ pizza }: PizzaDetailsPageProps) {
 
           <div className={styles.heroInfo}>
             <PizzaInformation pizza={pizza} />
-            <PizzaActions pizzaName={pizza.name} />
+            <PizzaActions pizzaId={pizza.id} pizzaName={pizza.name} />
           </div>
         </div>
 

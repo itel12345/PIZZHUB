@@ -1,27 +1,49 @@
-import type { Metadata } from "next"; 
-import { Geist, Geist_Mono } from "next/font/google"; 
-import "./globals.css"; 
-// Comment out this import line for now:
-// import BackgroundGlow from "@/components/effects/BackgroundGlow"; 
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], }); 
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], }); 
+// import BackgroundGlow from "@/components/effects/BackgroundGlow";
 
-export const metadata: Metadata = { 
-  title: "PizzHub", 
-  description: "Fresh and delicious pizzas delivered to your door.", 
-}; 
+import { FavoritesProvider } from "@/components/favorites";
+import { CartProvider } from "@/components/cart";
+import { AuthProvider } from "@/components/auth";
 
-export default function RootLayout({ 
-  children, 
-}: Readonly<{ children: React.ReactNode; }>) { 
-  return ( 
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}> 
-      <body> 
-        {/* 🚨 REMOVE OR COMMENT OUT THIS COMPONENT BELOW: */}
-        {/* <BackgroundGlow /> */} 
-        {children} 
-      </body> 
-    </html> 
-  ); 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "PizzHub",
+  description: "Fresh and delicious pizzas delivered to your door.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
+      <body>
+        {/* <BackgroundGlow /> */}
+
+        <AuthProvider>
+          <FavoritesProvider>
+            <CartProvider>
+              {children}
+            </CartProvider>
+          </FavoritesProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
 }

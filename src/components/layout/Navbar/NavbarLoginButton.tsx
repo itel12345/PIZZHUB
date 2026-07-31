@@ -1,19 +1,25 @@
-import Link from "next/link";
 import styles from "./Navbar.module.css";
 
 /**
  * NavbarLoginButton
  *
- * Secondary action button linking to the future login route.
- * This is a UI placeholder only — no authentication, form, or
- * backend logic is wired up here. Styled as a quiet glass
- * button so it stays visually subordinate to the primary
- * "Order Now" CTA.
+ * Secondary action button that opens AuthenticationModal on the Login
+ * screen. No longer a route link — login now happens entirely inside
+ * the modal, no page navigation. Same quiet glass styling as before,
+ * so it stays visually subordinate to the primary "Order Now" CTA.
  */
-export default function NavbarLoginButton() {
+interface NavbarLoginButtonProps {
+  onClick: () => void;
+}
+
+export default function NavbarLoginButton({ onClick }: NavbarLoginButtonProps) {
   return (
-    <Link href="/login" className={`${styles.navButton} ${styles.loginButton}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${styles.navButton} ${styles.loginButton}`}
+    >
       Log In
-    </Link>
+    </button>
   );
 }

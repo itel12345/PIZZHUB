@@ -1,0 +1,41 @@
+.section {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.logoutButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.logoutButton svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.logoutButton:hover {
+  border-color: #ff5050;
+  color: #ff7a7a;
+}
+
+.logoutButton:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logoutButton {
+    transition: none;
+  }
+}

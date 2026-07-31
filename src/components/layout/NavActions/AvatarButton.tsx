@@ -1,9 +1,7 @@
-// src/components/layout/NavActions/AvatarButton.tsx
-// Placeholder only, per the spec: structure it so a dropdown (Profile,
-// Orders, Addresses, Settings, Logout) can be attached later without
-// changing this button's markup or the space it occupies in the Navbar.
+"use client";
 
-import type { AuthUser } from "./useAuthState";
+import Link from "next/link";
+import type { AuthUser } from "@/components/auth/types/auth";
 import styles from "./NavActions.module.css";
 
 interface AvatarButtonProps {
@@ -14,19 +12,20 @@ export default function AvatarButton({ user }: AvatarButtonProps) {
   const initial = user.name.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <button
-      type="button"
+    <Link
+      href="/profile"
       className={styles.avatarButton}
-      aria-label={`${user.name}'s account menu`}
-      // TODO: onClick should open the account dropdown
-      // (Profile / Orders / Addresses / Settings / Logout) once auth exists.
+      aria-label={`${user.name}'s profile`}
     >
       {user.avatarUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={user.avatarUrl} alt="" className={styles.avatarImage} />
+        <img
+          src={user.avatarUrl}
+          alt={user.name}
+          className={styles.avatarImage}
+        />
       ) : (
-        <span aria-hidden="true">{initial}</span>
+        <span>{initial}</span>
       )}
-    </button>
+    </Link>
   );
 }

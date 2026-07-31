@@ -1,12 +1,9 @@
 // src/components/menu/PizzaCard/FavoriteButton.tsx
-// Standalone heart-toggle button. Kept separate from PizzaCard so the same
-// control can be reused later on /favorites, or swapped to read/write a
-// real Favorites table without touching the card layout.
-//
-// Future integration: replace the `isFavorite`/`onToggle` props with a
-// hook like `useFavorite(pizzaId)` that reads/writes through the User →
-// Favorites relation once auth + database are in place. The click handler
-// below is already isolated (stopPropagation'd) so that swap is a one-line change.
+// Standalone heart-toggle button, reused by PizzaCard, PizzaActions (pizza
+// details page), and anywhere else a favorite toggle is needed. Backed by
+// the global useFavorites() context (src/components/favorites) via the
+// isFavorite/onToggle props passed in by each caller — this component
+// itself doesn't know or care where the data comes from.
 
 "use client";
 
@@ -31,6 +28,11 @@ export default function FavoriteButton({ isFavorite, onToggle, pizzaName }: Favo
       aria-label={isFavorite ? `Remove ${pizzaName} from favorites` : `Add ${pizzaName} to favorites`}
     >
       <svg
+        // Keying by isFavorite forces React to remount the <svg> on every
+        // toggle (in both directions), so the bounce keyframe in
+        // FavoriteButton.module.css restarts fresh each click instead of
+        // only playing once.
+        key={isFavorite ? "favorited" : "unfavorited"}
         className={styles.icon}
         viewBox="0 0 24 24"
         fill={isFavorite ? "currentColor" : "none"}

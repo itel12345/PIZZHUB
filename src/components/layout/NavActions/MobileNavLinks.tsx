@@ -1,12 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuthState } from "./useAuthState";
+import { useAuth } from "@/components/auth";
+import { useAccountPanel, ACCOUNT_MENU_ITEMS } from "@/components/profile";
 import styles from "./MobileNavLinks.module.css";
 
 interface MobileNavLinksProps {
+  /** Whether the parent drawer is currently open — used to reset the
+   *  account panel back to the nav view whenever the drawer closes, so
+   *  reopening it never surprises the user with the account panel
+   *  still showing from last time. */
+  isOpen?: boolean;
   onNavigate?: () => void;
+  onOpenLogin?: () => void;
+  onOpenSignup?: () => void;
 }
 
 interface NavItem {
@@ -27,116 +36,217 @@ const SECONDARY_LINKS: NavItem[] = [
 /**
  * MobileNavLinks
  *
- * Content rendered inside the mobile drawer. Per the Phase 4 spec, this is
- * navigation pages ONLY: Home, Menu, About, Contact, Profile. Favorites and
- * Cart are deliberately NOT repeated here — they're already permanently
- * visible next to the hamburger once logged in (see Navbar.tsx), and
- * "Order Now" belongs only to the homepage hero. Duplicating either here
- * would undo the whole point of this redesign.
+ * Content rendered inside the mobile drawer. Phase 4 shape: Home, Menu,
+ * About, Contact as flat nav rows.
+ *
+ * Phase 5 change: tapping "Profile" (when logged in) no longer
+ * navigates directly. Instead it slides in a second panel — the
+ * account panel — containing avatar/name/email plus the full account
+ * menu (My Profile, Orders, Saved Addresses, Payment Methods,
+ * Notifications, Settings) and Logout, exactly like iOS Settings
+ * drilling into a sub-page. The Back arrow returns to the nav panel
+ * without closing the drawer. When logged out, Login/Sign Up still
+ * open AuthenticationModal directly (unchanged from the auth phase).
+ *
+ * The two panels are two full-width children inside a horizontally
+ * sliding track (transform: translateX only — GPU-accelerated, no
+ * layout thrashing), toggled by useAccountPanel().
  */
-export default function MobileNavLinks({ onNavigate }: MobileNavLinksProps) {
+export default function MobileNavLinks({
+  isOpen,
+  onNavigate,
+  onOpenLogin,
+  onOpenSignup,
+}: MobileNavLinksProps) {
   const pathname = usePathname();
-  const { isAuthenticated, user } = useAuthState();
+  const { isAuthenticated, user, logout } = useAuth();
+  const { isAccountPanelOpen, openAccountPanel, closeAccountPanel } =
+    useAccountPanel();
+
+  // Reset to the nav panel whenever the drawer itself closes, so it
+  // never reopens mid-account-panel unexpectedly.
+  useEffect(() => {
+    if (!isOpen) {
+      closeAccountPanel();
+    }
+  }, [isOpen, closeAccountPanel]);
+
+  const handleLogout = () => {
+    logout();
+    onNavigate?.();
+  };
 
   return (
     <nav aria-label="Mobile" className={styles.nav}>
-      <ul className={styles.group}>
-        <NavRow
-          href="/"
-          label="Home"
-          icon={<HomeIcon />}
-          isActive={pathname === "/"}
-          onNavigate={onNavigate}
-        />
-        <NavRow
-          href="/menu"
-          label="Menu"
-          icon={<MenuIcon />}
-          isActive={pathname === "/menu"}
-          onNavigate={onNavigate}
-        />
-      </ul>
+      <div className={styles.panelsViewport}>
+        <div
+          className={`${styles.panelsTrack} ${
+            isAccountPanelOpen ? styles.trackShiftedToAccount : ""
+          }`}
+        >
+          {/* ============ PANEL 1 — Navigation ============ */}
+          <div
+            className={styles.panel}
+            aria-hidden={isAccountPanelOpen}
+            inert={isAccountPanelOpen ? true : undefined}
+          >
+            <ul className={styles.group}>
+              <NavRow
+                href="/"
+                label="Home"
+                icon={<HomeIcon />}
+                isActive={pathname === "/"}
+                onNavigate={onNavigate}
+              />
+              <NavRow
+                href="/menu"
+                label="Menu"
+                icon={<MenuIcon />}
+                isActive={pathname === "/menu"}
+                onNavigate={onNavigate}
+              />
+            </ul>
 
-      <div className={styles.divider} aria-hidden="true" />
+            <div className={styles.divider} aria-hidden="true" />
 
-      <ul className={styles.group}>
-        <NavRow
-          href="/about"
-          label="About"
-          icon={<InfoIcon />}
-          isActive={pathname === "/about"}
-          onNavigate={onNavigate}
-        />
-        <NavRow
-          href="/contact"
-          label="Contact"
-          icon={<ContactIcon />}
-          isActive={pathname === "/contact"}
-          onNavigate={onNavigate}
-        />
-      </ul>
+            <ul className={styles.group}>
+              <NavRow
+                href="/about"
+                label="About"
+                icon={<InfoIcon />}
+                isActive={pathname === "/about"}
+                onNavigate={onNavigate}
+              />
+              <NavRow
+                href="/contact"
+                label="Contact"
+                icon={<ContactIcon />}
+                isActive={pathname === "/contact"}
+                onNavigate={onNavigate}
+              />
+            </ul>
 
-      <div className={styles.divider} aria-hidden="true" />
+            {/* Pushes the auth/profile trigger to the bottom of the drawer. */}
+            <div className={styles.spacer} />
 
-      <ul className={styles.group}>
-        <NavRow
-          href="/profile"
-          label="Profile"
-          icon={<ProfileIcon />}
-          isActive={pathname === "/profile"}
-          onNavigate={onNavigate}
-        />
-      </ul>
+            <div className={styles.divider} aria-hidden="true" />
 
-      {/* Pushes the auth section to the bottom of the drawer. */}
-      <div className={styles.spacer} />
-
-      <div className={styles.divider} aria-hidden="true" />
-
-      {isAuthenticated && user ? (
-        <div className={styles.authSection}>
-          <div className={styles.identity}>
-            <span className={styles.identityAvatar} aria-hidden="true">
-              {user.name.trim().charAt(0).toUpperCase() || "?"}
-            </span>
-            <span className={styles.identityName}>{user.name}</span>
+            {isAuthenticated && user ? (
+              <div className={styles.authSection}>
+                <button
+                  type="button"
+                  className={styles.profileTrigger}
+                  onClick={openAccountPanel}
+                  aria-haspopup="true"
+                >
+                  <span className={styles.identityAvatar} aria-hidden="true">
+                    {user.name.trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <span className={styles.profileTriggerText}>
+                    <span className={styles.identityName}>{user.name}</span>
+                    <span className={styles.profileTriggerHint}>
+                      View account
+                    </span>
+                  </span>
+                  <span className={styles.chevron} aria-hidden="true">
+                    <ChevronRightIcon />
+                  </span>
+                </button>
+              </div>
+            ) : (
+              <div className={styles.authSection}>
+                <button
+                  type="button"
+                  onClick={() => onOpenLogin?.()}
+                  className={styles.loginLink}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenSignup?.()}
+                  className={styles.signUpLink}
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
 
-          <Link href="/profile" onClick={onNavigate} className={styles.row}>
-            <span className={styles.icon}>
-              <ProfileIcon />
-            </span>
-            <span className={styles.label}>Profile</span>
-          </Link>
+          {/* ============ PANEL 2 — Account ============ */}
+          <div
+            className={styles.panel}
+            aria-hidden={!isAccountPanelOpen}
+            inert={!isAccountPanelOpen ? true : undefined}
+          >
+            {user && (
+              <>
+                <div className={styles.accountHeader}>
+                  <button
+                    type="button"
+                    className={styles.backButton}
+                    onClick={closeAccountPanel}
+                    aria-label="Back to menu"
+                  >
+                    <ChevronLeftIcon />
+                  </button>
+                  <span className={styles.accountHeaderTitle}>Account</span>
+                </div>
 
-          {/* No /settings route yet — placeholder per spec, clearly marked
-              rather than linking somewhere misleading. */}
-          <button type="button" className={`${styles.row} ${styles.rowDisabled}`} disabled>
-            <span className={styles.icon}>
-              <SettingsIcon />
-            </span>
-            <span className={styles.label}>Settings</span>
-            <span className={styles.soonTag}>Soon</span>
-          </button>
+                <div className={styles.accountIdentity}>
+                  <span className={styles.accountAvatar} aria-hidden="true">
+                    {user.name.trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <span className={styles.accountName}>{user.name}</span>
+                  {user.email && (
+                    <span className={styles.accountEmail}>{user.email}</span>
+                  )}
+                </div>
 
-          {/* TODO: wire to Auth.js sign-out once configured */}
-          <button type="button" className={styles.row} onClick={onNavigate}>
-            <span className={styles.icon}>
-              <LogoutIcon />
-            </span>
-            <span className={styles.label}>Logout</span>
-          </button>
+                <div className={styles.divider} aria-hidden="true" />
+
+                <ul className={styles.group}>
+                  {ACCOUNT_MENU_ITEMS.map((item) =>
+                    item.isAvailable ? (
+                      <li key={item.id}>
+                        <Link
+                          href={item.href}
+                          onClick={onNavigate}
+                          className={styles.row}
+                        >
+                          <span className={styles.label}>{item.label}</span>
+                        </Link>
+                      </li>
+                    ) : (
+                      <li key={item.id}>
+                        <button
+                          type="button"
+                          className={`${styles.row} ${styles.rowDisabled}`}
+                          disabled
+                        >
+                          <span className={styles.label}>{item.label}</span>
+                          <span className={styles.soonTag}>Soon</span>
+                        </button>
+                      </li>
+                    )
+                  )}
+                </ul>
+
+                <div className={styles.divider} aria-hidden="true" />
+
+                <button
+                  type="button"
+                  className={styles.logoutRow}
+                  onClick={handleLogout}
+                >
+                  <LogoutIcon />
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      ) : (
-        <div className={styles.authSection}>
-          <Link href="/login" onClick={onNavigate} className={styles.loginLink}>
-            Login
-          </Link>
-          <Link href="/signup" onClick={onNavigate} className={styles.signUpLink}>
-            Sign Up
-          </Link>
-        </div>
-      )}
+      </div>
     </nav>
   );
 }
@@ -220,30 +330,18 @@ function ContactIcon() {
   );
 }
 
-function ProfileIcon() {
+function ChevronRightIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.25" stroke="currentColor" strokeWidth="1.6" />
-      <path
-        d="M5 19.5c1.2-3.3 4-5 7-5s5.8 1.7 7 5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
+      <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function SettingsIcon() {
+function ChevronLeftIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="2.75" stroke="currentColor" strokeWidth="1.6" />
-      <path
-        d="M12 4.5v2M12 17.5v2M4.5 12h2M17.5 12h2M6.8 6.8l1.4 1.4M15.8 15.8l1.4 1.4M6.8 17.2l1.4-1.4M15.8 8.2l1.4-1.4"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
+      <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

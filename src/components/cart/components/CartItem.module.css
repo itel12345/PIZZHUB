@@ -1,0 +1,177 @@
+.item {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto auto auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+
+.item:hover {
+  border-color: var(--color-orange);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unitPrice {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-border);
+}
+
+.stepperButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--text-base);
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.stepperButton:hover:not(:disabled) {
+  background: var(--color-orange);
+  color: var(--color-text-inverse);
+}
+
+.stepperButton:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+.stepperButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.quantity {
+  min-width: 1.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}
+
+.lineTotal {
+  font-weight: 700;
+  color: var(--color-orange);
+  font-size: var(--text-base);
+  min-width: 4.5rem;
+  text-align: right;
+}
+
+.removeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.removeButton:hover {
+  background: rgba(255, 80, 80, 0.12);
+  color: #ff5050;
+}
+
+.removeButton:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .item {
+    grid-template-columns: 3.5rem 1fr;
+    grid-template-areas:
+      "image details"
+      "stepper stepper"
+      "total remove";
+    row-gap: 0.75rem;
+  }
+
+  .imageWrapper {
+    grid-area: image;
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .details {
+    grid-area: details;
+  }
+
+  .stepper {
+    grid-area: stepper;
+    justify-self: start;
+  }
+
+  .lineTotal {
+    grid-area: total;
+    text-align: left;
+  }
+
+  .removeButton {
+    grid-area: remove;
+    justify-self: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .stepperButton,
+  .removeButton {
+    transition: none;
+  }
+}

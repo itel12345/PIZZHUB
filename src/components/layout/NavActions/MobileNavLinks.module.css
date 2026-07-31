@@ -198,9 +198,209 @@
   transform: scale(0.98);
 }
 
+/* ========================================================================
+   Phase 5 additions — sliding two-panel account system (Navigation <->
+   Account). Everything above this line is untouched from the original
+   file. `.identityAvatar`/`.identityName` above are reused as-is inside
+   `.profileTrigger` below rather than redefined.
+   ======================================================================== */
+
+.panelsViewport {
+  overflow: hidden;
+  flex: 1;
+}
+
+.panelsTrack {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  transform: translateX(0%);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trackShiftedToAccount {
+  transform: translateX(-50%);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+/* --------------------------------------
+   Profile trigger (Panel 1) — replaces the old static .identity display;
+   now a real button that opens the Account panel instead of just
+   showing the name.
+-------------------------------------- */
+.profileTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.profileTrigger:hover,
+.profileTrigger:focus-visible {
+  border-color: var(--color-orange);
+  outline: none;
+}
+
+.profileTrigger:active {
+  transform: scale(0.98);
+}
+
+.profileTriggerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.profileTriggerHint {
+  font-size: var(--text-xs, 0.7rem);
+  color: var(--color-text-secondary);
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.chevron svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* --------------------------------------
+   Panel 2 — Account
+-------------------------------------- */
+.accountHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-glass);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.backButton svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+  background: rgba(255, 122, 0, 0.14);
+  color: var(--color-orange);
+  outline: none;
+}
+
+.accountHeaderTitle {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.accountIdentity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 1rem 0 1.5rem;
+}
+
+.accountAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-orange);
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 700;
+}
+
+.accountName {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.accountEmail {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-secondary);
+}
+
+.logoutRow {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background: transparent;
+  border: none;
+  color: #ff7a7a;
+  font-size: var(--text-base, 1rem);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.logoutRow svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+}
+
+.logoutRow:hover,
+.logoutRow:focus-visible {
+  background: rgba(255, 80, 80, 0.1);
+  outline: none;
+}
+
+.logoutRow:active {
+  transform: scale(0.98);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .row,
-  .signUpLink {
+  .signUpLink,
+  .panelsTrack,
+  .profileTrigger,
+  .backButton,
+  .logoutRow {
     transition: none;
   }
 }

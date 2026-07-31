@@ -1,0 +1,5 @@
+.page {
+  /* Intentionally no background — .glow-container shows through,
+     consistent with every other page. */
+  min-height: 100vh;
+}

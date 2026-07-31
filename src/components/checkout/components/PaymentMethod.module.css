@@ -1,0 +1,87 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
+}
+
+.heading {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.9rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-border);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.option:hover {
+  border-color: var(--color-orange);
+}
+
+.optionSelected {
+  border-color: var(--color-orange);
+  background: rgba(255, 122, 0, 0.08);
+}
+
+.radioInput {
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--color-orange);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.radioInput:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+.optionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.optionLabel {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.optionDescription {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  font-size: var(--text-xs);
+  color: #ff7a7a;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

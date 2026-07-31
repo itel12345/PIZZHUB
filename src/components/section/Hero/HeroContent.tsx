@@ -18,7 +18,7 @@ export default function HeroContent() {
       </p>
 
       <div className={styles.actions}>
-        <Link href="/order" className={`${styles.button} ${styles.pill} ${styles.buttonPrimary}`}>
+        <Link href="/menu" className={`${styles.button} ${styles.pill} ${styles.buttonPrimary}`}>
           Order Now
         </Link>
         <Link
