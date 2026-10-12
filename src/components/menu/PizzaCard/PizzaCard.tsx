@@ -5,8 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import FavoriteButton from "./FavoriteButton";
 import { useFavorites } from "@/components/favorites";
-import { useCart } from "@/components/cart";
-import { useAuth } from "@/components/auth";
+import { useCart, useCartToast } from "@/components/cart";
 import styles from "./PizzaCard.module.css";
 import type { Pizza } from "../hooks/useMenuFilters";
 
@@ -20,61 +19,75 @@ export default function PizzaCard({ pizza, index }: PizzaCardProps) {
   const [added, setAdded] = useState(false);
 
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { items, addToCart } = useCart();
+  const { showAddedToast, showQuantityUpdatedToast } = useCartToast();
 
   const handleAdd = async () => {
-    if (!isAuthenticated) {
-      alert("Please login first.");
-      return;
-    }
+    // CartContext.addToCart already handles both guest (localStorage)
+    // and authenticated (server) modes internally — it decides which
+    // one to use, not this component. The manual fetch that used to
+    // live here, and the "please log in first" guard, both predated
+    // that — they were the pre-migration version of this button
+    // talking to the old cart API directly. Now that CartContext does
+    // that itself, keeping this component's own fetch meant every
+    // click double-submitted (both this fetch AND CartContext's
+    // internal one hit /api/cart), and the login guard meant guests
+    // couldn't add to cart at all despite the whole point of the
+    // guest-cart/merge-on-login design being that they can.
+    //
+    // wasAlreadyInCart is read BEFORE calling addToCart — items only
+    // reflects post-add state after the promise resolves and this
+    // component re-renders, so capturing it now is what actually lets
+    // the toast say "added" vs "quantity updated" correctly.
+    const wasAlreadyInCart = items.some(
+      (item) => item.pizzaId === String(pizza.dbId)
+    );
 
-    try {
-      const token = localStorage.getItem("token");
+    const succeeded = await addToCart(
+      {
+        pizzaId: String(pizza.dbId),
+        name: pizza.name,
+        image: pizza.image,
+        price: pizza.price,
+      },
+      quantity
+    );
 
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          pizzaId: pizza.id,
-          quantity,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || "Failed to add pizza.");
-        return;
+    // Toast only fires on a real, confirmed success — CartContext's
+    // addToCart resolves false (and sets its own `error` state) on any
+    // server-mode failure, so a rejected/failed add-to-cart request
+    // never shows a false "added" confirmation.
+    if (succeeded) {
+      if (wasAlreadyInCart) {
+        showQuantityUpdatedToast(pizza.name);
+      } else {
+        showAddedToast(pizza.name);
       }
 
-      // Keep the current UI working while we migrate
-      addToCart(
-        {
-          pizzaId: pizza.id,
-          name: pizza.name,
-          image: pizza.image,
-          price: pizza.price,
-        },
-        quantity
-      );
-
       setAdded(true);
-
       window.setTimeout(() => {
         setAdded(false);
       }, 1600);
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong.");
     }
   };
 
   return (
     <article className={styles.card}>
+      {/* FavoriteButton renders as a sibling of Link, not a descendant
+          — .card (not .imageWrapper) is now its positioned ancestor
+          (see PizzaCard.module.css: .card got position: relative for
+          exactly this). This is a structural fix, not just an event-
+          handling one: no click on this button can ever reach Link's
+          navigation, on any device or input type, because it's not
+          inside the <a> the Link renders at all. Visually identical
+          placement (top-right over the image) since nothing renders
+          above the image within .card. */}
+      <FavoriteButton
+        isFavorite={isFavorite(String(pizza.dbId))}
+        onToggle={() => toggleFavorite(String(pizza.dbId))}
+        pizzaName={pizza.name}
+      />
+
       <Link
         href={`/menu/${pizza.id}`}
         className={styles.cardLink}
@@ -94,12 +107,6 @@ export default function PizzaCard({ pizza, index }: PizzaCardProps) {
               Chef&apos;s Selection
             </span>
           )}
-
-          <FavoriteButton
-            isFavorite={isFavorite(pizza.id)}
-            onToggle={() => toggleFavorite(pizza.id)}
-            pizzaName={pizza.name}
-          />
         </div>
 
         <div className={styles.info}>

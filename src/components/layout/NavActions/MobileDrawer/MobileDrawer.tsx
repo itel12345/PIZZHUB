@@ -45,11 +45,10 @@ export default function MobileDrawer({ isOpen, onClose, children }: MobileDrawer
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Portals need a real `document` to target, which doesn't exist during
-  // server rendering — only render the portal after mounting on the client.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // server rendering — only render the portal on the client. Initialize
+  // mounted from the runtime environment to avoid calling setState inside
+  // an effect (which can trigger cascading renders).
+  const [mounted] = useState(() => typeof window !== "undefined");
 
   // Lock page scroll while the drawer is open.
   useEffect(() => {

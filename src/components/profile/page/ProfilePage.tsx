@@ -17,21 +17,26 @@ import LogoutSection from "../components/LogoutSection";
 import styles from "./ProfilePage.module.css";
 
 export function ProfilePage() {
-    const { user, isAuthenticated, isLoading, logout } = useAuth();
+    const { user, isAuthenticated, isHydrated, logout } = useAuth();
   const router = useRouter();
 
 useEffect(() => {
-  if (!isLoading && !isAuthenticated) {
+  // isHydrated is the inverse concept of the old isLoading — true once
+  // AuthContext has finished checking localStorage, not while it's
+  // still checking. !isLoading === isHydrated, so this condition
+  // means the same thing it always did: "once we actually know the
+  // auth state, and it's 'not authenticated', redirect."
+  if (isHydrated && !isAuthenticated) {
     router.replace("/");
   }
-}, [isLoading, isAuthenticated, router]);
+}, [isHydrated, isAuthenticated, router]);
 
   const handleLogout = () => {
     logout();
     router.push("/");
   };
 
-if (isLoading) {
+if (!isHydrated) {
   return null;
 }
 

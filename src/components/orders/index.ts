@@ -1,13 +1,10 @@
 // src/components/orders/index.ts
 //
-// Public barrel for the orders feature. Exports everything from
-// orderStorage.ts. No context/hooks layer yet — this phase is the
-// storage layer only, not wired into CheckoutPage or Order Success.
+// Public barrel for the orders feature. Replaces the old
+// storage/orderStorage.ts localStorage stub — orders are now real
+// server records (src/lib/orders.ts), fetched via useOrder() (single)
+// and useOrders() (list, for order history).
 
-export {
-  getOrders,
-  saveOrder,
-  getLatestOrder,
-  clearOrders,
-} from "./storage/orderStorage";
-export type { Order } from "./storage/orderStorage";
+export { useOrder } from "./hooks/useOrder";
+export { useOrders } from "./hooks/useOrders";
+export type { Order } from "./hooks/useOrder";

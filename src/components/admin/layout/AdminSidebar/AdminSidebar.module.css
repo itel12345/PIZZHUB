@@ -1,0 +1,31 @@
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  min-height: 100vh;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-glass-border);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.logo {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  padding: 0 0.5rem;
+}
+
+.logoAccent {
+  color: var(--color-orange);
+}
+
+/* Below this width the drawer (rendered by AdminShell via the shared
+   MobileDrawer) replaces this sidebar entirely — no point keeping a
+   240px column reserved on a phone-width viewport. */
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+}

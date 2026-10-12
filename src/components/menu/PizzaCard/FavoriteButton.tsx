@@ -21,6 +21,14 @@ export default function FavoriteButton({ isFavorite, onToggle, pizzaName }: Favo
       type="button"
       className={`${styles.button} ${isFavorite ? styles.buttonActive : ""}`}
       onClick={(event) => {
+        // stopPropagation alone should already prevent the ancestor
+        // <Link>'s navigation from firing (the click event never
+        // bubbles to reach it) — preventDefault is added as a second,
+        // independent guard against the browser's native "follow this
+        // anchor" behavior specifically, in case anything about how
+        // Next.js's Link registers its click handling isn't purely
+        // bubble-dependent. Costs nothing, closes the gap either way.
+        event.preventDefault();
         event.stopPropagation();
         onToggle();
       }}

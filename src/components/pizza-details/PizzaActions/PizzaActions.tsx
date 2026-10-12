@@ -15,7 +15,7 @@
 import { useState } from "react";
 import FavoriteButton from "@/components/menu/PizzaCard/FavoriteButton";
 import { useFavorites } from "@/components/favorites";
-import { useCart } from "@/components/cart";
+import { useCart, useCartToast } from "@/components/cart";
 import styles from "./PizzaActions.module.css";
 
 interface PizzaActionsProps {
@@ -37,15 +37,30 @@ export default function PizzaActions({
   // source of truth, per the spec.
   const { isFavorite, toggleFavorite } = useFavorites();
   // Same global cart source as PizzaCard and the Navbar badge.
-  const { addToCart } = useCart();
+  const { items, addToCart } = useCart();
+  const { showAddedToast, showQuantityUpdatedToast } = useCartToast();
 
-  const handleAdd = () => {
-    addToCart(
+  const handleAdd = async () => {
+    // Captured before the add resolves — same reasoning as PizzaCard's
+    // handleAdd: items only reflects the post-add state once this
+    // component re-renders after the promise settles.
+    const wasAlreadyInCart = items.some((item) => item.pizzaId === pizzaId);
+
+    const succeeded = await addToCart(
       { pizzaId, name: pizzaName, image: pizzaImage, price: pizzaPrice },
       quantity
     );
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1600);
+
+    if (succeeded) {
+      if (wasAlreadyInCart) {
+        showQuantityUpdatedToast(pizzaName);
+      } else {
+        showAddedToast(pizzaName);
+      }
+
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 1600);
+    }
   };
 
   return (

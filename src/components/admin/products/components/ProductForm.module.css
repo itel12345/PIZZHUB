@@ -1,0 +1,103 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 640px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  padding: 1.75rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.field input,
+.field textarea,
+.field select {
+  background: var(--color-background);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--color-orange);
+}
+
+.fieldCheckbox {
+  display: flex;
+  align-items: flex-end;
+}
+
+.fieldCheckbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding-bottom: 0.6rem;
+}
+
+.error {
+  font-size: var(--text-sm);
+  color: #f87171;
+}
+
+.fieldError {
+  font-size: var(--text-xs);
+  color: #f87171;
+  margin-top: 0.15rem;
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"],
+.field select[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.submitButton {
+  align-self: flex-start;
+  background: var(--color-orange);
+  color: var(--color-background);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: opacity 0.15s ease;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

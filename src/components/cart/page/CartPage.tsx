@@ -4,7 +4,14 @@ import { useCart } from "../hooks/useCart";
 import { CartItem } from "../components/CartItem";
 import { CartSummary } from "../components/CartSummary";
 import { EmptyCart } from "../components/EmptyCart";
+import type { PublicSiteSettingsDTO } from "@/lib/settings";
 import styles from "./CartPage.module.css";
+
+interface CartPageProps {
+  /** Server-fetched settings, threaded down from app/cart/page.tsx —
+   * see CartSummary for why. */
+  initialSettings?: PublicSiteSettingsDTO;
+}
 
 /**
  * CartPage
@@ -16,7 +23,7 @@ import styles from "./CartPage.module.css";
  * set on `.page` (see Layer 4 note in globals.css) so the ambient glow
  * container shows through, matching Menu/PizzaDetails/Favorites pages.
  */
-export function CartPage() {
+export function CartPage({ initialSettings }: CartPageProps) {
   const { items } = useCart();
 
   return (
@@ -35,7 +42,7 @@ export function CartPage() {
             </section>
 
             <div className={styles.summaryColumn}>
-              <CartSummary />
+              <CartSummary initialSettings={initialSettings} />
             </div>
           </div>
         )}

@@ -1,0 +1,29 @@
+.wrap {
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  padding: 1.25rem;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.bar {
+  fill: var(--color-orange);
+}
+
+.axisLabel {
+  fill: var(--color-text-secondary);
+  font-size: 9px;
+}
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}

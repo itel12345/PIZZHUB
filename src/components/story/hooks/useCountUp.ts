@@ -48,12 +48,13 @@ export function useCountUp({
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    let rafId: number;
+
     if (prefersReducedMotion) {
-      setValue(end);
-      return;
+      rafId = requestAnimationFrame(() => setValue(end));
+      return () => cancelAnimationFrame(rafId);
     }
 
-    let rafId: number;
     const startTime = performance.now();
 
     function tick(now: number) {

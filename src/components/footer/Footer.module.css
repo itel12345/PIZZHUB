@@ -1,13 +1,18 @@
 /* ============================================
    Footer.module.css
-   Premium, minimal footer. Elegant black
-   (#050505, not glass, not gray), single
+   Premium, minimal footer. Uses the same global
+   --color-background as the rest of the page
+   (previously a separate hardcoded #050505 —
+   close enough to --color-background (#060608)
+   to be imperceptible as an intentional accent,
+   but a real inconsistency against "one
+   consistent black" across the app). Single
    hairline top border, generous spacing.
 ============================================ */
 
 .footer {
   position: relative;
-  background: #050505;
+  background: var(--color-background);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 
   padding: 5rem 3rem 3rem;

@@ -27,17 +27,11 @@
 }
 
 /* --------------------------------------
-   Background Layer
-   Hosts the reused BackgroundGlow effect.
-   Sits behind all scene content, never
-   intercepts pointer events.
+   Background Layer removed — the ambient
+   glow now comes from the single global
+   BackgroundGlow instance in the root
+   layout instead of a local copy here.
 -------------------------------------- */
-.backgroundLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
 
 /* --------------------------------------
    Scene Container

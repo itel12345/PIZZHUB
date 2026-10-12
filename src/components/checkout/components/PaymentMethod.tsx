@@ -14,6 +14,7 @@ interface PaymentOption {
   value: PaymentMethodValue;
   label: string;
   description: string;
+  comingSoon?: boolean;
 }
 
 const PAYMENT_OPTIONS: PaymentOption[] = [
@@ -26,6 +27,10 @@ const PAYMENT_OPTIONS: PaymentOption[] = [
     value: "momo",
     label: "Mobile Money",
     description: "Pay instantly via MTN, Vodafone, or AirtelTigo",
+    // comingSoon flag removed now that /api/checkout actually routes
+    // this through Paystack — see PaymentOption's comingSoon field
+    // (kept in the type for any future option that isn't wired up
+    // yet, just not used by this one anymore).
   },
 ];
 
@@ -59,18 +64,26 @@ export default function PaymentMethod({
           return (
             <label
               key={option.value}
-              className={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
+              className={`${styles.option} ${isSelected ? styles.optionSelected : ""} ${
+                option.comingSoon ? styles.optionDisabled : ""
+              }`}
             >
               <input
                 type="radio"
                 name="paymentMethod"
                 value={option.value}
                 checked={isSelected}
+                disabled={option.comingSoon}
                 onChange={() => onChange(option.value)}
                 className={styles.radioInput}
               />
               <span className={styles.optionContent}>
-                <span className={styles.optionLabel}>{option.label}</span>
+                <span className={styles.optionLabel}>
+                  {option.label}
+                  {option.comingSoon && (
+                    <span className={styles.comingSoonBadge}>Coming soon</span>
+                  )}
+                </span>
                 <span className={styles.optionDescription}>{option.description}</span>
               </span>
             </label>

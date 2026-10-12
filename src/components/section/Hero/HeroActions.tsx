@@ -118,7 +118,7 @@ export default function HeroArtwork({
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const particles = useMemo(generateParticles, []);
+  const particles = useMemo(() => generateParticles(), []);
 
   // Pointer-driven parallax. We write directly to CSS custom properties via
   // the ref rather than React state, so the mouse-move handler never

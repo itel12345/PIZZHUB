@@ -16,6 +16,11 @@ interface CartItemProps {
  * its own, so it can never drift out of sync with the cart context.
  */
 export function CartItem({ item }: CartItemProps) {
+  // Quantity/remove actions are optimistic (see CartContext) — the UI
+  // updates instantly, so there's no isLoading-gated disable here.
+  // What actually matters for correctness under rapid clicks is fixed
+  // in CartContext itself (functional state updates, not a stale
+  // closure), not by blocking the button.
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
 
   const lineTotal = item.price * item.quantity;

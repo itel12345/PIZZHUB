@@ -1,0 +1,66 @@
+.wrap {
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  padding: 1.25rem;
+}
+
+.heading {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.rowHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: var(--text-sm);
+  flex-wrap: wrap;
+}
+
+.methodLabel {
+  color: var(--color-text);
+  font-weight: var(--font-medium);
+}
+
+.methodValue {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-glass);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--color-orange);
+  border-radius: 999px;
+}
+
+.empty {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}

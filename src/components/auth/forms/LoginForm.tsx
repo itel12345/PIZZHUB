@@ -10,6 +10,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthInput from "../components/AuthInput";
 import PasswordField from "../components/PasswordField";
 import SocialLogin from "../components/SocialLogin";
@@ -23,18 +24,42 @@ interface LoginFormValues {
 
 type LoginFormErrors = Partial<Record<keyof LoginFormValues, string>>;
 
+/**
+ * `redirectTo` ultimately comes from a URL query string (see
+ * middleware.ts denyAccess -> Navbar -> useAuthModal), which is
+ * attacker-controllable — a crafted link like
+ * `/?admin_auth_required=1&redirect=https://evil.example` must never
+ * be able to send a freshly-authenticated admin off-site. Only accept
+ * a same-origin, root-relative path: must start with a single "/" and
+ * explicitly not "//" (protocol-relative — browsers treat that as an
+ * external redirect) or "/\" (some browsers normalize backslash to
+ * forward-slash, same bypass).
+ */
+function isSafeRedirectTarget(value: string | null | undefined): value is string {
+  if (!value) return false;
+  if (!value.startsWith("/")) return false;
+  if (value.startsWith("//") || value.startsWith("/\\")) return false;
+  return true;
+}
+
 interface LoginFormProps {
   onSwitchToSignup: () => void;
   onSwitchToForgotPassword: () => void;
   onSuccess: () => void;
+  /** If set, navigate here after a successful login instead of just
+   *  closing the modal in place — used when the user was bounced to
+   *  the homepage by a protected admin route. */
+  redirectTo?: string | null;
 }
 
 export default function LoginForm({
   onSwitchToSignup,
   onSwitchToForgotPassword,
   onSuccess,
+  redirectTo,
 }: LoginFormProps) {
   const { login } = useAuth();
+  const router = useRouter();
   const [values, setValues] = useState<LoginFormValues>({
     email: "",
     password: "",
@@ -90,8 +115,18 @@ export default function LoginForm({
       // auth state — no manual localStorage writes, no page reload.
 login(data.user, data.token);
 
-// close the modal
+// Always close the modal — whether we're also navigating or not.
 onSuccess();
+
+if (isSafeRedirectTarget(redirectTo)) {
+  // router.refresh() forces server components (the admin layout,
+  // the admin page itself) to re-run now that the admin_session
+  // cookie the login response just set is actually present —
+  // otherwise the RSC tree they navigate into could still be
+  // holding the pre-login (logged-out) render.
+  router.push(redirectTo as string);
+  router.refresh();
+}
 
 alert(data.message);
 

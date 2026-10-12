@@ -1,0 +1,107 @@
+.tableWrap {
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table thead {
+  background: var(--color-glass);
+}
+
+.table th {
+  text-align: left;
+  padding: 0.85rem 1.25rem;
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table td {
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--color-glass-border);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.customerName {
+  font-weight: var(--font-medium);
+}
+
+.customerEmail {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+}
+
+/* Mobile: table -> stacked cards, same technique as Orders/Products
+   tables — each <tr> becomes a card, each <td> becomes a labeled row
+   via data-label + ::before. */
+@media (max-width: 768px) {
+  .tableWrap {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+
+  .table,
+  .table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 0.75rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .table tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-top: none;
+  }
+
+  .table td + td {
+    border-top: 1px solid var(--color-glass-border);
+  }
+
+  .table td[data-label]::before {
+    content: attr(data-label);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+}

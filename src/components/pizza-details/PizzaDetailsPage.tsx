@@ -39,7 +39,7 @@ export default function PizzaDetailsPage({ pizza, pizzas }: PizzaDetailsPageProp
           <div className={styles.heroInfo}>
             <PizzaInformation pizza={pizza} />
             <PizzaActions
-              pizzaId={pizza.id}
+              pizzaId={String(pizza.dbId)}
               pizzaName={pizza.name}
               pizzaImage={pizza.image}
               pizzaPrice={pizza.price}

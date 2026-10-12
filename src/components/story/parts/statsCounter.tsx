@@ -85,7 +85,7 @@ export function StatsCounter() {
 
       <p className={styles.paragraph}>
         Every number below reflects a promise we keep every single
-        day — to source honestly, prepare patiently, and serve
+        day to source honestly, prepare patiently, and serve
         something worth coming back for.
       </p>
 

@@ -46,6 +46,9 @@
 }
 
 .placeOrderButton {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 100%;
   padding: 1.1rem 1.5rem;
   border: none;
@@ -56,7 +59,8 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
 }
 
 .placeOrderButton:hover {
@@ -71,6 +75,97 @@
 
 .placeOrderButton:active {
   transform: translateY(0);
+}
+
+.placeOrderButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.placeOrderButton:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Label and loading state occupy the same box (grid-stacked) so the
+   crossfade between them doesn't shift the button's height/width at
+   all — a size jump on submit would read as janky, not premium. */
+.buttonLabel,
+.buttonLoading {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.buttonLabel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.buttonLabelHidden {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+
+.buttonLoading {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeInLoading 220ms ease 40ms forwards;
+}
+
+@keyframes fadeInLoading {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinnerTrack {
+  stroke: currentColor;
+  opacity: 0.3;
+}
+
+.spinnerHead {
+  stroke: currentColor;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.6s;
+  }
+  .buttonLoading {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.submitError {
+  font-size: var(--text-sm);
+  color: #ff7a7a;
+  margin: 0 0 0.75rem;
+  text-align: center;
 }
 
 @media (max-width: 900px) {

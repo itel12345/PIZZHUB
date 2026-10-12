@@ -31,6 +31,10 @@ import styles from "./AuthenticationModal.module.css";
 interface AuthenticationModalProps {
   isOpen: boolean;
   view: AuthView;
+  /** Where to send the user after a successful login, if they were
+   *  bounced here from a protected admin page. Undefined/null for a
+   *  normal, unprompted login — in that case the modal just closes. */
+  redirectTo?: string | null;
   onViewChange: (view: AuthView) => void;
   onClose: () => void;
 }
@@ -58,6 +62,7 @@ const FOCUSABLE_SELECTOR =
 export function AuthenticationModal({
   isOpen,
   view,
+  redirectTo,
   onViewChange,
   onClose,
 }: AuthenticationModalProps) {
@@ -71,19 +76,37 @@ export function AuthenticationModal({
   useEffect(() => {
     if (isOpen) {
       previouslyFocusedElement.current = document.activeElement as HTMLElement;
-      setShouldRender(true);
-      setIsClosing(false);
+      // Defer state updates to avoid synchronous setState inside effect
+      // which can cause cascading renders. Using a short timeout yields
+      // the same behavior without the React warning.
+      const id = window.setTimeout(() => {
+        setShouldRender(true);
+        setIsClosing(false);
+      }, 0);
+      return () => window.clearTimeout(id);
       return;
     }
 
     if (shouldRender) {
-      setIsClosing(true);
-      const timeout = window.setTimeout(() => {
-        setShouldRender(false);
-        setIsClosing(false);
-        previouslyFocusedElement.current?.focus?.();
-      }, CLOSE_ANIMATION_MS);
-      return () => window.clearTimeout(timeout);
+      // Defer setting `isClosing` so we don't call setState synchronously
+      // inside the effect body which can trigger cascading renders.
+      const startId = window.setTimeout(() => {
+        setIsClosing(true);
+        const timeout = window.setTimeout(() => {
+          setShouldRender(false);
+          setIsClosing(false);
+          previouslyFocusedElement.current?.focus?.();
+        }, CLOSE_ANIMATION_MS);
+        // clear the close timeout if the effect cleans up
+        cleanup.closeTimeout = timeout;
+      }, 0);
+
+      const cleanup: (() => void) & { closeTimeout?: number } = () => {
+        window.clearTimeout(startId);
+        if (cleanup.closeTimeout) window.clearTimeout(cleanup.closeTimeout);
+      };
+
+      return cleanup;
     }
     // shouldRender intentionally omitted — only isOpen should retrigger this.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,6 +201,7 @@ export function AuthenticationModal({
   onSwitchToSignup={() => onViewChange("signup")}
   onSwitchToForgotPassword={() => onViewChange("forgot-password")}
   onSuccess={onClose}
+  redirectTo={redirectTo}
 />
           )}
           {view === "signup" && (

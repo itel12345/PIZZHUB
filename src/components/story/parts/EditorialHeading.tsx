@@ -20,7 +20,7 @@ export function EditorialHeading() {
     >
       <div className={styles.accentRow}>
         <span className={styles.accentLine} aria-hidden="true" />
-        <span className={styles.accentLabel}>Our Story</span>
+        <span className={styles.accentLabel}> Our Story</span>
       </div>
 
       <h2 className={styles.heading}>
@@ -31,7 +31,7 @@ export function EditorialHeading() {
 
       <p className={styles.paragraph}>
         From the farm to the stone oven, every pizza we make carries a
-        history of care — real ingredients, honest technique, and a
+        history of care real ingredients, honest technique, and a
         respect for the craft that turns a simple meal into something
         worth remembering.
       </p>

@@ -2,24 +2,31 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "../hooks/useCart";
+import { usePublicSettings } from "@/hooks/usePublicSettings";
+import type { PublicSiteSettingsDTO } from "@/lib/settings";
 import styles from "./CartSummary.module.css";
 
-// Temporary fixed delivery fee. TODO: replace with real delivery pricing
-// logic (distance/zone-based) once backend delivery rules exist.
-const DELIVERY_FEE = 15;
+interface CartSummaryProps {
+  /** Server-fetched settings, threaded down from app/cart/page.tsx —
+   * when present, skips the client fetch entirely so delivery fee is
+   * correct on the very first paint, not a moment after. */
+  initialSettings?: PublicSiteSettingsDTO;
+}
 
 /**
  * CartSummary
  *
- * Order summary panel: subtotal (derived from cart), fixed delivery fee,
- * grand total, and the "Proceed to Checkout" button. Checkout itself is
- * out of scope for this phase — the button only navigates to /checkout.
+ * Order summary panel: subtotal (derived from cart), delivery fee (live
+ * from Settings — see usePublicSettings), grand total, and the "Proceed
+ * to Checkout" button. Checkout itself is out of scope for this phase —
+ * the button only navigates to /checkout.
  */
-export function CartSummary() {
+export function CartSummary({ initialSettings }: CartSummaryProps) {
   const { subtotal, itemCount } = useCart();
+  const { deliveryFee } = usePublicSettings(initialSettings);
   const router = useRouter();
 
-  const grandTotal = subtotal + DELIVERY_FEE;
+  const grandTotal = subtotal + deliveryFee;
 
   return (
     <aside className={styles.summary} aria-label="Order summary">
@@ -32,7 +39,7 @@ export function CartSummary() {
         </div>
         <div className={styles.row}>
           <dt>Delivery Fee</dt>
-          <dd>${DELIVERY_FEE.toFixed(2)}</dd>
+          <dd>${deliveryFee.toFixed(2)}</dd>
         </div>
       </dl>
 

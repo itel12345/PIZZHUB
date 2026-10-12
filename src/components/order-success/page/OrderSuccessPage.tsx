@@ -1,23 +1,29 @@
 // src/components/order-success/page/OrderSuccessPage.tsx
 //
-// Confirmation page shown after a successful checkout. Loads the most
-// recently placed order via getLatestOrder() — no more placeholder
-// data. If no order exists (e.g. someone navigates here directly
-// without having checked out), redirects to /menu instead of showing
-// fake data.
+// Confirmation page shown after a successful checkout. Loads the order
+// by id (passed via ?orderId= in the URL by CheckoutPage's redirect)
+// through useOrder() — a real, ownership-checked server fetch, not
+// "whatever's most recent in this browser's localStorage". If no
+// orderId is present, or the fetch comes back not-found/not-yours,
+// redirects to /menu instead of showing fake data — same fallback
+// behavior as before, just triggered by a real failure mode now
+// instead of an empty localStorage array.
 //
-// Order items/pricing are read from the saved Order record itself, NOT
-// from useCart() — by this point the cart has already been cleared by
-// CheckoutPage, so the order's own snapshot (items, subtotal, deliveryFee,
-// tax, total) is the only correct source for what was actually ordered.
+// Order items/pricing are read from the order record itself, NOT from
+// useCart() — by this point the cart has already been cleared server-
+// side as part of order confirmation, so the order's own snapshot
+// (items, subtotal, deliveryFee, tax, total) is the only correct
+// source for what was actually ordered.
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getLatestOrder, type Order } from "@/components/orders";
+import { useOrder, type Order } from "@/components/orders";
+import { useCart } from "@/components/cart";
+import { getStoredAuthToken } from "@/components/auth";
 import styles from "./OrderSuccessPage.module.css";
 
 // Human-readable labels for the value-based options chosen in Checkout.
@@ -54,26 +60,124 @@ function formatAddress(order: Order): string {
 
 export function OrderSuccessPage() {
   const router = useRouter();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [hasChecked, setHasChecked] = useState(false);
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
 
-  // Runs once on mount (client-only, since it reads localStorage).
-  // Loads the latest order; if none exists, redirects away instead of
-  // rendering a page with nothing real to show.
+  const { order, isLoading, notFound, pollTimedOut, retry } = useOrder(orderId);
+  const { clearCart } = useCart();
+
+  // Redirects away once we're certain there's nothing real to show —
+  // either no orderId was in the URL at all, or the fetch confirmed
+  // it doesn't exist / isn't this user's order. Never redirects while
+  // still loading — that would fire on every legitimate visit before
+  // the fetch had a chance to complete.
   useEffect(() => {
-    const latest = getLatestOrder();
-    if (!latest) {
+    if (!isLoading && notFound) {
       router.replace("/menu");
+    }
+  }, [isLoading, notFound, router]);
+
+  // CartContext has no way to know the Paystack webhook cleared the
+  // server-side cart out from under it — the checkout redirect to
+  // Paystack was a full page navigation, which tears down and
+  // recreates CartContext fresh; it fetches once on mount and has no
+  // channel back to this page's own order-status polling. This is
+  // that missing channel: the moment THIS page observes the order
+  // becoming confirmed, tell CartContext to sync. clearCart() is
+  // idempotent (COD already calls it directly, unaffected by this) —
+  // calling it again here when the cart's already empty server-side
+  // is a harmless no-op, not a double-clear bug.
+  const hasSyncedCartRef = useRef(false);
+  useEffect(() => {
+    if (order?.status === "confirmed" && !hasSyncedCartRef.current) {
+      hasSyncedCartRef.current = true;
+      clearCart();
+    }
+  }, [order?.status, clearCart]);
+
+  // Resolves the one gap the webhook alone can't cover: a customer who
+  // cancels before ever attempting a charge produces no charge event
+  // at all, so nothing would otherwise ever move this order out of
+  // "pending". Fires exactly once, only while the order is genuinely
+  // still pending — actively asks Paystack what happened instead of
+  // waiting on a push that, for a pure cancellation, never arrives.
+  // retry() is useOrder's existing, already-built refetch trigger —
+  // this doesn't touch useOrder.ts's own polling logic at all, it just
+  // calls the same mechanism a fresh time once the server-side status
+  // has actually been resolved by the call below.
+  const hasTriggeredVerifyRef = useRef(false);
+  useEffect(() => {
+    if (order?.status !== "pending" || hasTriggeredVerifyRef.current || !orderId) {
       return;
     }
-    setOrder(latest);
-    setHasChecked(true);
-  }, [router]);
+    hasTriggeredVerifyRef.current = true;
 
-  if (!hasChecked || !order) {
-    // Either still checking, or the redirect above is in flight —
-    // render nothing rather than a flash of placeholder content.
+    const token = getStoredAuthToken();
+    void fetch("/api/checkout/paystack/verify-return", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ orderId }),
+    })
+      .then(() => retry())
+      .catch(() => {
+        // Best-effort — if this fails (network hiccup, etc.), the
+        // existing poll and its timeout/"Check again" fallback are
+        // still there exactly as before. This is a faster resolution
+        // path layered on top, not a replacement for them.
+      });
+  }, [order?.status, orderId, retry]);
+
+  if (isLoading || !order) {
+    // Either still loading, or the redirect above is in flight for a
+    // not-found/not-yours order — render nothing rather than a flash
+    // of placeholder content either way.
     return null;
+  }
+
+  if (order.status === "pending") {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <section className={styles.hero}>
+            <div className={styles.pendingSpinner} aria-hidden="true" />
+            <h1 className={styles.heading}>Confirming your payment…</h1>
+            <p className={styles.message}>
+              {pollTimedOut
+                ? "This is taking longer than expected. Your payment may still be processing."
+                : "This usually takes just a few seconds. Don't close this page."}
+            </p>
+            {pollTimedOut && (
+              <button
+                type="button"
+                className={styles.cancelledCartLink}
+                onClick={retry}
+              >
+                Check again
+              </button>
+            )}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (order.status === "cancelled") {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <section className={styles.hero}>
+            <h1 className={styles.heading}>Payment wasn&apos;t completed</h1>
+            <p className={styles.message}>
+              This order wasn&apos;t confirmed — no charge was made. You can
+              try again from your cart.
+            </p>
+            <Link href="/cart" className={styles.cancelledCartLink}>
+              Return to cart
+            </Link>
+          </section>
+        </div>
+      </div>
+    );
   }
 
   const deliveryMethodLabel =

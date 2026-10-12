@@ -1,0 +1,107 @@
+.panel {
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.heading {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.subheading {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  margin-top: 0.25rem;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: var(--text-sm);
+}
+
+.infoRow dt {
+  color: var(--color-text-secondary);
+}
+
+.infoRow dd {
+  color: var(--color-text);
+  font-weight: var(--font-medium);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 360px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.field input {
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}
+
+.field input:focus {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 1px;
+}
+
+.errorMessage {
+  color: #f87171;
+  font-size: var(--text-sm);
+}
+
+.successMessage {
+  color: #4ade80;
+  font-size: var(--text-sm);
+}
+
+.saveButton {
+  align-self: flex-start;
+  background: var(--color-orange);
+  color: #111;
+  font-weight: var(--font-semibold);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .form {
+    max-width: none;
+  }
+}

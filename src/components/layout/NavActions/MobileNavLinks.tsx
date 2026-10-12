@@ -18,21 +18,6 @@ interface MobileNavLinksProps {
   onOpenSignup?: () => void;
 }
 
-interface NavItem {
-  href: string;
-  label: string;
-}
-
-const PRIMARY_LINKS: NavItem[] = [
-  { href: "/", label: "Home" },
-  { href: "/menu", label: "Menu" },
-];
-
-const SECONDARY_LINKS: NavItem[] = [
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
-
 /**
  * MobileNavLinks
  *
@@ -57,7 +42,7 @@ export default function MobileNavLinks({
   onNavigate,
   onOpenLogin,
   onOpenSignup,
-}: MobileNavLinksProps) {
+}: MobileNavLinksProps): import("react").JSX.Element {
   const pathname = usePathname();
   const { isAuthenticated, user, logout } = useAuth();
   const { isAccountPanelOpen, openAccountPanel, closeAccountPanel } =

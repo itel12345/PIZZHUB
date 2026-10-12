@@ -9,12 +9,10 @@
 // each consumer maps `id` to its own local icon component, since icons
 // are a rendering concern, not data.
 //
-// `isAvailable: false` items render as disabled "Soon" rows — same
-// precedent already established for the Settings row in MobileNavLinks
-// before this phase. `href` points at /profile for all items for now
-// since that's the only real destination that exists; give each item
-// (Orders, Saved Addresses, Payment Methods, Notifications, Settings)
-// its own route later and only this file changes.
+// `isAvailable: false` would render as a disabled "Soon" row (see
+// MobileNavLinks) — every item below now has a real route, so nothing
+// currently uses that state, but the rendering support stays in place
+// for whatever gets added next.
 
 export interface AccountMenuItem {
   id: string;
@@ -36,35 +34,35 @@ export const ACCOUNT_MENU_ITEMS: AccountMenuItem[] = [
     id: "orders",
     label: "Orders",
     description: "Track current orders and review past ones",
-    href: "/profile",
-    isAvailable: false,
+    href: "/profile/orders",
+    isAvailable: true,
   },
   {
     id: "addresses",
     label: "Saved Addresses",
     description: "Manage where PizzHub delivers to",
-    href: "/profile",
-    isAvailable: false,
+    href: "/profile/addresses",
+    isAvailable: true,
   },
   {
     id: "payment",
     label: "Payment Methods",
-    description: "Manage saved cards and payment options",
-    href: "/profile",
-    isAvailable: false,
+    description: "See which payment options are currently accepted",
+    href: "/profile/payments",
+    isAvailable: true,
   },
   {
     id: "notifications",
     label: "Notifications",
-    description: "Choose what PizzHub can notify you about",
-    href: "/profile",
-    isAvailable: false,
+    description: "Updates about your orders and payments",
+    href: "/profile/notifications",
+    isAvailable: true,
   },
   {
     id: "settings",
     label: "Settings",
     description: "Account preferences and app settings",
-    href: "/profile",
-    isAvailable: false,
+    href: "/profile/settings",
+    isAvailable: true,
   },
 ];

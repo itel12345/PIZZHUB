@@ -6,24 +6,35 @@
 // total) — deliberately NOT the interactive CartItem component, since
 // stepper/remove controls don't belong at checkout.
 //
-// DELIVERY_FEE is a local constant for now, matching CartSummary's
-// pattern, kept separate to avoid touching Cart's files in this phase.
-// TODO: extract to a single shared constant once Cart and Checkout need
-// to guarantee they can never show two different delivery fees.
+// Delivery fee and tax rate come from usePublicSettings() (live
+// Settings) instead of local constants — this preview now matches what
+// the server actually charges (see lib/orders.ts / lib/settings.ts's
+// computeTax), rather than risking two different numbers.
 
 "use client";
 
 import Image from "next/image";
 import { useCart } from "@/components/cart";
+import { usePublicSettings } from "@/hooks/usePublicSettings";
+import type { PublicSiteSettingsDTO } from "@/lib/settings";
 import styles from "./OrderReview.module.css";
 
-const DELIVERY_FEE = 15;
-const TAX = 0; // TODO: real tax calculation
+interface OrderReviewProps {
+  /** Server-fetched settings, threaded down from
+   * app/checkout/page.tsx — when present, skips the client fetch
+   * entirely so delivery fee/tax are correct on the very first paint. */
+  initialSettings?: PublicSiteSettingsDTO;
+}
 
-export default function OrderReview() {
+export default function OrderReview({ initialSettings }: OrderReviewProps) {
   const { items, subtotal } = useCart();
+  const { deliveryFee, taxRate } = usePublicSettings(initialSettings);
 
-  const grandTotal = subtotal + DELIVERY_FEE + TAX;
+  // Same rounding as lib/settings.ts's computeTax — kept in sync
+  // deliberately rather than importing a server-only module into a
+  // client component.
+  const tax = Math.round(subtotal * (taxRate / 100) * 100) / 100;
+  const grandTotal = subtotal + deliveryFee + tax;
 
   return (
     <aside className={styles.review} aria-label="Order review">
@@ -65,11 +76,11 @@ export default function OrderReview() {
         </div>
         <div className={styles.row}>
           <dt>Delivery Fee</dt>
-          <dd>${DELIVERY_FEE.toFixed(2)}</dd>
+          <dd>${deliveryFee.toFixed(2)}</dd>
         </div>
         <div className={styles.row}>
           <dt>Tax</dt>
-          <dd>${TAX.toFixed(2)}</dd>
+          <dd>${tax.toFixed(2)}</dd>
         </div>
       </dl>
 

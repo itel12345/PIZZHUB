@@ -404,3 +404,40 @@
     transform: none;
   }
 }
+.pendingSpinner {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-glass-border);
+  border-top-color: var(--color-orange);
+  animation: pendingSpin 0.9s linear infinite;
+}
+
+@keyframes pendingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cancelledCartLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: transform 180ms ease;
+}
+
+.cancelledCartLink:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pendingSpinner {
+    animation-duration: 1.8s;
+  }
+}

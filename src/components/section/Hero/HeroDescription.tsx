@@ -10,7 +10,7 @@ export default function HeroDescription() {
   return (
     <p className={styles.description}>
       Handcrafted pizzas made with quality ingredients, baked fresh, and
-      delivered fast to your door — wherever you are in Ghana.
+      delivered fast to your door wherever you are in Ghana.
     </p>
   );
 }

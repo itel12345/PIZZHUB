@@ -63,6 +63,38 @@
 }
 
 /* ============================================
+   Layer 1b — Light Theme Override (Profile → Settings → Appearance)
+   ============================================
+   New, not a pre-existing system: this app previously had exactly one
+   hardcoded dark palette above and no light variant at all. Everything
+   else in this file — every component's CSS module, too — reads color
+   exclusively through the --color-* tokens defined in :root, so
+   redefining just those tokens under this attribute selector reskins
+   the entire app without touching a single component. --color-orange
+   (the brand accent) and every non-color token (glow/typography/
+   spacing) are intentionally NOT overridden here — the accent and the
+   shape of things stay the same across both themes, only the light/dark
+   surface does not.
+   The attribute itself is set on <html> — by the inline no-flash
+   script in layout.tsx on first paint, and by ThemeProvider
+   (src/components/theme) afterward — never written here.
+   ============================================ */
+:root[data-theme="light"] {
+  --color-background: #F7F5F2; /* Warm off-white, not stark white — keeps the "premium" feel from the dark theme's true-black canvas */
+  --color-surface: #FFFFFF;    /* Clean white for nested cards/menus */
+
+  --color-text: #14151A;           /* Near-black, high contrast on the warm off-white background */
+  --color-text-secondary: #5B6472; /* Slate gray secondary text */
+  /* --color-text-inverse intentionally NOT overridden: it's the text
+     color placed over bright orange buttons, and the dark theme's
+     near-black value reads just as well against the orange accent on
+     a light background as it does on a dark one. */
+
+  --color-glass: rgba(0, 0, 0, 0.04);        /* Same frosted-glass effect, inverted for a light surface */
+  --color-glass-border: rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
    Layer 2 — Reset
    ============================================ */
 *, *::before, *::after {

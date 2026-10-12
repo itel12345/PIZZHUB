@@ -13,7 +13,7 @@ const FEATURES: FeatureCardData[] = [
   {
     title: "Fresh Ingredients",
     description:
-      "Sourced daily from local growers — nothing frozen, nothing processed.",
+      "Sourced daily from local growers nothing frozen, nothing processed.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
@@ -61,7 +61,7 @@ const FEATURES: FeatureCardData[] = [
   {
     title: "Wood Fired",
     description:
-      "Baked in a real wood-fired oven for that signature smoky char.",
+      "Baked in a real wood fired oven for that signature smoky char.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path

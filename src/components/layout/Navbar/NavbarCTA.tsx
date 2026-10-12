@@ -10,7 +10,7 @@ import styles from "./Navbar.module.css";
  */
 export default function NavbarCTA() {
   return (
-    <Link href="/order" className={`${styles.navButton} ${styles.cta}`}>
+    <Link href="/menu" className={`${styles.navButton} ${styles.cta}`}>
       Order Now
     </Link>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { AuthUser } from "@/components/auth/types/auth";
 import styles from "./NavActions.module.css";
 
@@ -18,10 +19,12 @@ export default function AvatarButton({ user }: AvatarButtonProps) {
       aria-label={`${user.name}'s profile`}
     >
       {user.avatarUrl ? (
-        <img
+        <Image
           src={user.avatarUrl}
           alt={user.name}
           className={styles.avatarImage}
+          width={32}
+          height={32}
         />
       ) : (
         <span>{initial}</span>

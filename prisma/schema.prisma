@@ -1,3 +1,27 @@
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  MOBILE_MONEY
+  CARD
+}
+
+enum NotificationType {
+  ORDER_PLACED
+  ORDER_CONFIRMED
+  ORDER_CANCELLED
+  PAYMENT_FAILED
+}
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -8,7 +32,7 @@ datasource db {
 }
 
 model Pizza {
-  id          Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
   price       Float
@@ -18,11 +42,13 @@ model Pizza {
   rating      Float
   addedAt     Int
   ingredients String[]
-  isPremium   Boolean @default(false)
+  isPremium   Boolean  @default(false)
 
   createdAt   DateTime @default(now())
 
   cartItems   CartItem[]
+  orderItems  OrderItem[]
+  favorites   Favorite[]
 }
 
 model User {
@@ -31,9 +57,20 @@ model User {
   email     String   @unique
   password  String
   image     String?
+
+  role      Role     @default(USER)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   cart      Cart?
+  orders    Order[]
+  favorites Favorite[]
+  addresses Address[]
+  notifications Notification[]
+  authVersion         Int      @default(0)
+  emailMarketingOptIn Boolean  @default(false)
+  smsMarketingOptIn   Boolean  @default(false)
 }
 
 model Cart {
@@ -41,6 +78,7 @@ model Cart {
   userId    String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
 }
@@ -51,8 +89,180 @@ model CartItem {
   pizzaId   Int
   quantity  Int      @default(1)
   createdAt DateTime @default(now())
+
   cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   pizza     Pizza    @relation(fields: [pizzaId], references: [id])
 
   @@unique([cartId, pizzaId])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+
+  status       OrderStatus  @default(PENDING)
+  paymentMethod PaymentMethod
+
+  paystackRef String?     @unique
+  paidAt      DateTime?
+
+  fullName    String
+  email       String
+  phone       String
+
+  street      String
+  city        String
+  region      String
+  postalCode  String
+
+  deliveryInstructions String?
+  deliveryMethod       String
+
+  subtotal    Float
+  deliveryFee Float
+  // Stores the actual tax amount charged on THIS order at the time it
+  // was placed — deliberately not recomputed from the current
+  // SiteSettings.taxRate on every read. If an admin changes the tax
+  // rate next month, historical orders must keep showing what was
+  // really charged, not a retroactively "corrected" figure. Defaults
+  // to 0 so existing orders (placed before this column existed, when
+  // tax was hardcoded to 0) remain accurate without a data migration.
+  tax         Float    @default(0)
+  total       Float
+
+  items       OrderItem[]
+  notifications Notification[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  pizzaId   Int
+  pizza     Pizza    @relation(fields: [pizzaId], references: [id])
+
+  name      String
+  price     Float
+  quantity  Int
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pizzaId   Int
+  pizza     Pizza    @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, pizzaId])
+}
+
+// Saved delivery addresses for the customer-facing Profile > Saved
+// Addresses feature. Field set deliberately mirrors
+// lib/validation/checkout.ts's address fields exactly (fullName,
+// phone, street, city, region, postalCode, deliveryInstructions) —
+// this IS what "an address" already means elsewhere in this app; a
+// saved address isn't a new concept, just a reusable copy of the same
+// fields Checkout already collects fresh every time. `isDefault` is
+// enforced as "at most one true per user" at the application layer
+// (lib/addresses.ts), not a DB constraint — the same singleton-style
+// approach already used for SiteSettings, rather than a partial unique
+// index for one boolean flag.
+model Address {
+  id     String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  label                String  @default("Home")
+  fullName             String
+  phone                String
+  street               String
+  city                 String
+  region               String
+  postalCode           String  @default("")
+  deliveryInstructions String  @default("")
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+// "singleton" (see lib/settings.ts), never created a second time.
+// A dedicated table rather than a generic key-value store: every field
+// here has a real, specific type and a real, specific consumer
+// (checkout pricing, payment-method gating, the Settings page itself),
+// so a strongly-typed row is safer than a stringly-typed KV table that
+// would need parsing/casting at every call site.
+model SiteSettings {
+  id String @id @default("singleton")
+
+  storeName    String @default("PizzHub")
+  contactPhone String @default("")
+  contactEmail String @default("")
+  address      String @default("")
+  city         String @default("")
+  region       String @default("")
+  // Stored as "HH:MM" (24-hour), validated at the application layer —
+  // not a DateTime, since this is a daily recurring time-of-day, not a
+  // specific instant.
+  openingTime  String @default("09:00")
+  closingTime  String @default("22:00")
+  isStoreOpen  Boolean @default(true)
+
+  // Same Float-for-money caveat as Order/Pizza elsewhere in this
+  // schema — kept consistent with the existing (documented) tech debt
+  // rather than introducing a second money representation just for
+  // this one table.
+  deliveryFee         Float   @default(15)
+  // Percentage points (0–100), not a 0–1 fraction — matches how an
+  // admin actually thinks/types "12.5" for 12.5%, validated in
+  // lib/validation/adminSettings.ts.
+  taxRate             Float   @default(0)
+  isDeliveryAvailable Boolean @default(true)
+
+  codEnabled         Boolean @default(true)
+  mobileMoneyEnabled Boolean @default(true)
+  cardEnabled        Boolean @default(true)
+
+  updatedAt DateTime @updatedAt
+}
+
+// Real order/payment events only — created exclusively from
+// lib/orders.ts at the exact moments a status actually changes
+// (see that file's comments at each call site). Never created
+// speculatively or for demo purposes. orderId is nullable with
+// onDelete: SetNull so a notification's history survives even if its
+// order were ever removed — the record of "this happened" outlives
+// the specific order it originally pointed at.
+model Notification {
+  id     String           @id @default(cuid())
+
+  userId String
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orderId String?
+  order   Order?           @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  type    NotificationType
+  title   String
+  message String
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
 }

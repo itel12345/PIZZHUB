@@ -18,4 +18,6 @@ export interface AuthUser {
   name: string;
   email: string;
   avatarUrl?: string;
+  /** "ADMIN" unlocks the /admin nav entry; anything else is a regular customer. */
+  role?: "USER" | "ADMIN";
 }

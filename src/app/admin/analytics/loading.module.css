@@ -1,0 +1,83 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-glass) 25%,
+    var(--color-surface) 50%,
+    var(--color-glass) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.4rem;
+}
+
+.title {
+  width: 140px;
+  height: 1.6rem;
+}
+
+.subtitle {
+  width: 220px;
+  height: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  height: 5.5rem;
+  border-radius: 0.75rem;
+}
+
+.chart {
+  height: 16rem;
+  border-radius: 0.75rem;
+}
+
+.splitRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.panel {
+  height: 14rem;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .splitRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

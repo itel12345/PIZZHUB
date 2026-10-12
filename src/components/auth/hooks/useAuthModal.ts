@@ -16,29 +16,39 @@ import type { AuthView } from "../types/auth";
 export function useAuthModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<AuthView>("login");
+  // Set when the modal was opened because a protected admin page
+  // bounced the user here (see Navbar's `admin_auth_required` handling)
+  // — consumed by LoginForm to navigate back after a successful login
+  // instead of just closing the modal in place.
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
-  const openLogin = useCallback(() => {
+  const openLogin = useCallback((redirect?: string) => {
     setView("login");
+    setRedirectTo(redirect ?? null);
     setIsOpen(true);
   }, []);
 
   const openSignup = useCallback(() => {
     setView("signup");
+    setRedirectTo(null);
     setIsOpen(true);
   }, []);
 
   const openForgotPassword = useCallback(() => {
     setView("forgot-password");
+    setRedirectTo(null);
     setIsOpen(true);
   }, []);
 
   const close = useCallback(() => {
     setIsOpen(false);
+    setRedirectTo(null);
   }, []);
 
   return {
     isOpen,
     view,
+    redirectTo,
     setView,
     openLogin,
     openSignup,

@@ -39,7 +39,7 @@ export default function FavoritesPage() {
 
   const favoritePizzas = useMemo(() => {
     return pizzas.filter((pizza) =>
-      favorites.includes(pizza.id)
+      favorites.includes(String(pizza.dbId))
     );
   }, [pizzas, favorites]);
 
