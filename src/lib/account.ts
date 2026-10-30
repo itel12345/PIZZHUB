@@ -19,6 +19,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "./prisma";
 import { AuthError, issueUserToken } from "./auth";
 import { hashPassword, verifyPassword } from "./password";
+import { deleteStoredAvatar } from "./avatar";
 import type {
   ChangeUserPasswordInput,
   MarketingPreferencesInput,
@@ -125,7 +126,7 @@ export async function deleteUserAccount(
 ): Promise<void> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { password: true, role: true },
+    select: { password: true, role: true, image: true },
   });
   if (!user) throw accountMissing();
 
@@ -166,4 +167,11 @@ export async function deleteUserAccount(
       },
     }),
   ]);
+
+  // The row no longer points at their photo, but the file itself would
+  // still sit in the bucket — a picture of someone who was told their
+  // details are removed. Best-effort (never throws): the account is
+  // already anonymized, and a storage hiccup must not turn a completed
+  // deletion into an error.
+  await deleteStoredAvatar(userId, user.image);
 }

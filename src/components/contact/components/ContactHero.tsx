@@ -20,7 +20,7 @@ export default function ContactHero() {
       </h1>
 
       <p className={styles.subhead}>
-        Questions, feedback, or a large order to plan — our team is always
+        Questions, feedback, or a large order to plan our team is always
         just a message away.
       </p>
     </section>

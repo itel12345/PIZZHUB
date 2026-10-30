@@ -23,7 +23,7 @@ export default function OurStory() {
             people planned their evenings around.
           </p>
           <p className={styles.paragraph}>
-            Today, that same philosophy drives everything we do — from the
+            Today, that same philosophy drives everything we do from the
             suppliers we choose to the drivers who bring your order to the
             door. We didn&apos;t scale by changing the recipe. We scaled by
             protecting it.

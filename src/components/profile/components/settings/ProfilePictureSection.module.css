@@ -1,0 +1,80 @@
+/* Preview-specific styles only. Panel, heading, description, buttons and
+   message colors come from SettingsSection.module.css so this section
+   matches the rest of the Settings page. */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 122, 0, 0.14);
+  box-shadow: 0 0 0 1px rgba(255, 122, 0, 0.3);
+  color: var(--color-orange);
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 700;
+}
+
+.previewPending {
+  box-shadow: 0 0 0 2px var(--color-orange);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.secondaryButton {
+  background: transparent;
+  border: 1px solid var(--color-glass-border);
+  color: var(--color-text);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

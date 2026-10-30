@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable}`}
       // Same reasoning as the <body> suppressHydrationWarning just
-      // below, extended to <html>: the no-flash script in <head> sets
+      // below, extended to <html>: the no-flash script at the top of <body> sets
       // data-theme on this element synchronously before React
       // hydrates (that's the entire point — see lib/theme.ts), which
       // would otherwise be flagged as a hydration mismatch even though
@@ -43,14 +43,6 @@ export default function RootLayout({
       // warnings on this one element, same as the existing usage below.
       suppressHydrationWarning
     >
-      <head>
-        {/* Sets data-theme on <html> before first paint so a returning
-            visitor who chose "light" never sees a flash of the default
-            dark theme while React hydrates and ThemeProvider mounts —
-            see lib/theme.ts's noFlashThemeScript for why this has to be
-            a real inline script rather than a React effect. */}
-        <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript() }} />
-      </head>
       {/*
         suppressHydrationWarning here (Next.js's own recommended fix, see
         https://nextjs.org/docs/messages/react-hydration-error) tells
@@ -61,6 +53,30 @@ export default function RootLayout({
         in a component further down would still show up normally.
       */}
       <body suppressHydrationWarning>
+        {/* Sets data-theme on <html> before first paint so a returning
+            visitor who chose "light" never sees a flash of the default
+            dark theme while React hydrates and ThemeProvider mounts —
+            see lib/theme.ts's noFlashThemeScript for why this has to be
+            a real inline script rather than a React effect.
+
+            It is injected as a raw HTML string inside a hidden <div>
+            instead of a <script> element in the React tree. The server
+            still emits a real <script> and the browser still runs it
+            while parsing, before any content below it is shown — but
+            React never creates a script element itself, so it can't
+            log "Encountered a script tag while rendering React
+            component" (React 19 logs that whenever it builds a
+            <script> on the client). The div is display:none, so it has
+            no layout effect, and suppressHydrationWarning stops React
+            comparing the markup it contains. */}
+        <div
+          hidden
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `<script>${noFlashThemeScript()}</script>`,
+          }}
+        />
+
         {/* The one, global instance — page-specific copies previously
             in menu/page.tsx and StoryExperience.tsx were removed in
             favor of this single instance, so every page gets the exact

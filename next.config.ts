@@ -14,7 +14,53 @@
 
 import type { NextConfig } from "next";
 
+// Profile pictures live in a Supabase Storage bucket, so next/image must
+// be allowed to load from that project's host. Derived from SUPABASE_URL
+// (the same variable the upload code uses) instead of hardcoding a
+// project id, and scoped to the public-object path only. Protocol and
+// port come from the URL too, so a local Supabase (http, port 54321)
+// works as well as the hosted one. If the variable is unset or
+// malformed the pattern is simply omitted: avatars then fall back to
+// the initial-letter circle rather than breaking the build.
+function getSupabaseImagePattern() {
+  try {
+    if (!process.env.SUPABASE_URL) return null;
+    const url = new URL(process.env.SUPABASE_URL);
+    return {
+      protocol: url.protocol === "http:" ? ("http" as const) : ("https" as const),
+      hostname: url.hostname,
+      port: url.port,
+      pathname: "/storage/v1/object/public/**",
+    };
+  } catch {
+    return null;
+  }
+}
+
+const supabaseImagePattern = getSupabaseImagePattern();
+
+// The exact prefix every stored avatar URL starts with in THIS
+// environment. Built the same way lib/avatar.ts builds the URLs it
+// saves (SUPABASE_URL without trailing slashes + the public-object path
+// + the bucket name), so "starts with this" means "was uploaded to the
+// bucket this app is currently configured for". Exposed to the browser
+// as NEXT_PUBLIC_AVATAR_PUBLIC_BASE (see lib/avatar-url.ts) so a picture
+// URL left over from a different Supabase project (e.g. production
+// after switching to dev) can be recognised and not handed to
+// next/image. Public by nature — it is already the prefix of every
+// avatar URL the browser receives — and contains no key. Empty string
+// when SUPABASE_URL is unset or malformed, same condition under which
+// the remote pattern above is omitted.
+function getAvatarPublicBase() {
+  if (!supabaseImagePattern || !process.env.SUPABASE_URL) return "";
+  const bucket = process.env.SUPABASE_AVATAR_BUCKET?.trim() || "avatars";
+  return `${process.env.SUPABASE_URL.replace(/\/+$/, "")}/storage/v1/object/public/${bucket}/`;
+}
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_AVATAR_PUBLIC_BASE: getAvatarPublicBase(),
+  },
   images: {
     remotePatterns: [
       {
@@ -22,6 +68,7 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      ...(supabaseImagePattern ? [supabaseImagePattern] : []),
     ],
   },
   // Dev-mode only — Next.js 16 blocks cross-origin requests to /_next/*

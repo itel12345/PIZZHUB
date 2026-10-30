@@ -50,8 +50,8 @@ export function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
 }
 
-/** Inlined into <head> in layout.tsx and run synchronously before
- * first paint, so a returning visitor who chose "light" never sees a
+/** Inlined at the top of <body> in layout.tsx and run synchronously
+ * while the page is parsed, before first paint, so a returning visitor who chose "light" never sees a
  * flash of the default dark theme while React hydrates. Returned as a
  * string (not a real function) because it has to be serialized into a
  * <script> tag — this is the one place in the app a raw inline script

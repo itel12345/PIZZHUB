@@ -47,7 +47,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Do you offer pickup instead of delivery?",
     answer:
-      "Yes — select Pickup as your delivery method during checkout and your order will be ready at our location in 15–20 minutes.",
+      "Yes select Pickup as your delivery method during checkout and your order will be ready at our location in 15–20 minutes.",
   },
   {
     question: "What payment methods do you accept?",
@@ -57,7 +57,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Can I change my order after placing it?",
     answer:
-      "Reach out to our support team as soon as possible — if your order hasn't entered preparation yet, we'll do our best to update it.",
+      "Reach out to our support team as soon as possible if your order hasn't entered preparation yet, we'll do our best to update it.",
   },
   {
     question: "Do you cater for large events?",

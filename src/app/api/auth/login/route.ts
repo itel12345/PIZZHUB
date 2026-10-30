@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { getJwtSecret } from "@/lib/env";
 import { ADMIN_SESSION_COOKIE, issueUserToken } from "@/lib/auth";
+import { isTrustedAvatarUrl } from "@/lib/avatar-url";
 
 export async function POST(request: NextRequest) {
   try {
@@ -86,6 +87,13 @@ export async function POST(request: NextRequest) {
           name: user.name,
           email: user.email,
           role: role ?? "USER",
+          // Without this the picture would vanish on every re-login,
+          // because the client rebuilds its user object from this
+          // response. null (no picture) is omitted from the JSON. A URL
+          // from a different Supabase project (e.g. production's, after
+          // switching to dev) is omitted too: this environment's
+          // next/image can't load it. The database value is untouched.
+          avatarUrl: isTrustedAvatarUrl(user.image) ? user.image : undefined,
         },
       },
       {

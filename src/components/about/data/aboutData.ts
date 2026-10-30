@@ -47,7 +47,7 @@ export const WHY_CHOOSE_FEATURES: FeatureHighlight[] = [
   {
     title: "Expert Chefs",
     description:
-      "Trained in traditional technique, obsessed with modern flavor — every pizza is shaped by hand.",
+      "Trained in traditional technique, obsessed with modern flavor every pizza is shaped by hand.",
   },
   {
     title: "Fresh Daily",
@@ -69,7 +69,7 @@ export interface IngredientCard {
 export const INGREDIENTS: IngredientCard[] = [
   {
     title: "Fresh Tomatoes",
-    description: "Vine-ripened and slow-simmered into a rich, balanced base sauce.",
+    description: "Vine ripened and slow simmered into a rich, balanced base sauce.",
   },
   {
     title: "Mozzarella",
@@ -101,7 +101,7 @@ export const PIZZA_JOURNEY: JourneyStep[] = [
   },
   {
     title: "Hand Tossed",
-    description: "Dough shaped by hand, never machine-pressed, for a lighter crust.",
+    description: "Dough shaped by hand, never machine pressed, for a lighter crust.",
   },
   {
     title: "Stone Baked",

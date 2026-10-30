@@ -1,10 +1,17 @@
+
 import "dotenv/config";
 
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is missing from the environment.");
+}
+
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: databaseUrl,
 });
 
 const prisma = new PrismaClient({
@@ -12,7 +19,14 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  await prisma.pizza.deleteMany();
+  const existingPizzaCount = await prisma.pizza.count();
+
+  if (existingPizzaCount > 0) {
+    console.log(
+      `Seed skipped: ${existingPizzaCount} pizza records already exist. No data was changed.`,
+    );
+    return;
+  }
 
   await prisma.pizza.createMany({
     data: [
@@ -79,11 +93,14 @@ async function main() {
     ],
   });
 
-  console.log("✅ Pizza database seeded.");
+  console.log("Pizza database seeded successfully.");
 }
 
 main()
-  .catch(console.error)
+  .catch((error) => {
+    console.error("Pizza database seeding failed:", error);
+    process.exitCode = 1;
+  })
   .finally(async () => {
     await prisma.$disconnect();
   });

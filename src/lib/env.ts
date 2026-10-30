@@ -43,3 +43,21 @@ export function getPaystackSecretKey(): string {
 export function getOwnerAdminEmail(): string {
   return required("OWNER_ADMIN_EMAIL");
 }
+
+/**
+ * Supabase Storage (profile pictures). SUPABASE_SERVICE_ROLE_KEY is a
+ * god-mode key that bypasses every Row Level Security rule, so it must
+ * only ever exist as a server environment variable — never with a
+ * NEXT_PUBLIC_ prefix, never in client code, never committed. It is read
+ * here, inside lib/avatar.ts (server-only), and nowhere else.
+ *
+ * The bucket name has a default because it is not a secret; the other
+ * two are required and fail loudly rather than silently falling back.
+ */
+export function getSupabaseStorageConfig() {
+  return {
+    url: required("SUPABASE_URL").replace(/\/+$/, ""),
+    serviceRoleKey: required("SUPABASE_SERVICE_ROLE_KEY"),
+    bucket: process.env.SUPABASE_AVATAR_BUCKET?.trim() || "avatars",
+  };
+}

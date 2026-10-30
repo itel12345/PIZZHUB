@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth";
 import { useAccountPanel, ACCOUNT_MENU_ITEMS } from "@/components/profile";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import styles from "./MobileNavLinks.module.css";
 
 interface MobileNavLinksProps {
@@ -125,7 +126,7 @@ export default function MobileNavLinks({
                   aria-haspopup="true"
                 >
                   <span className={styles.identityAvatar} aria-hidden="true">
-                    {user.name.trim().charAt(0).toUpperCase() || "?"}
+                    <UserAvatar user={user} size={88} />
                   </span>
                   <span className={styles.profileTriggerText}>
                     <span className={styles.identityName}>{user.name}</span>
@@ -180,7 +181,7 @@ export default function MobileNavLinks({
 
                 <div className={styles.accountIdentity}>
                   <span className={styles.accountAvatar} aria-hidden="true">
-                    {user.name.trim().charAt(0).toUpperCase() || "?"}
+                    <UserAvatar user={user} size={128} />
                   </span>
                   <span className={styles.accountName}>{user.name}</span>
                   {user.email && (

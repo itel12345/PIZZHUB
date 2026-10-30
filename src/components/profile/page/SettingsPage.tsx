@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/auth";
 import { useAccountSettings } from "../hooks/useAccountSettings";
+import { useProfilePicture } from "../hooks/useProfilePicture";
+import { ProfilePictureSection } from "../components/settings/ProfilePictureSection";
 import { AppearanceSection } from "../components/settings/AppearanceSection";
 import { MarketingSection } from "../components/settings/MarketingSection";
 import { SecuritySection } from "../components/settings/SecuritySection";
@@ -16,7 +18,7 @@ import { DangerZoneSection } from "../components/settings/DangerZoneSection";
 import styles from "./SettingsPage.module.css";
 
 export function SettingsPage() {
-  const { isAuthenticated, isHydrated, logout, refreshToken } = useAuth();
+  const { user, isAuthenticated, isHydrated, logout, refreshToken, updateUser } = useAuth();
   const router = useRouter();
   const {
     preferences,
@@ -45,6 +47,15 @@ export function SettingsPage() {
     return result;
   };
 
+  const { prepareAvatar, uploadAvatar, removeAvatar } = useProfilePicture();
+
+  // The server has confirmed the change by now; this pushes it into the
+  // shared auth state so the Navbar, mobile drawer and Profile header
+  // all update at once and the persisted copy survives a refresh.
+  const handleAvatarChanged = (avatarUrl: string | undefined) => {
+    updateUser({ avatarUrl });
+  };
+
   useEffect(() => {
     if (isHydrated && !isAuthenticated) {
       router.replace("/");
@@ -56,7 +67,7 @@ export function SettingsPage() {
     router.push("/");
   };
 
-  if (!isHydrated || !isAuthenticated) {
+  if (!isHydrated || !isAuthenticated || !user) {
     return null;
   }
 
@@ -71,6 +82,13 @@ export function SettingsPage() {
           <p className={styles.subheading}>Manage how PizzHub looks and works for you.</p>
         </div>
 
+        <ProfilePictureSection
+          user={user}
+          prepareAvatar={prepareAvatar}
+          uploadAvatar={uploadAvatar}
+          removeAvatar={removeAvatar}
+          onChanged={handleAvatarChanged}
+        />
         <AppearanceSection />
 
         <MarketingSection

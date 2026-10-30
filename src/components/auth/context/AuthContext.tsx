@@ -31,6 +31,7 @@ import {
   type ReactNode,
 } from "react";
 import type { AuthUser } from "../types/auth";
+import { isTrustedAvatarUrl } from "@/lib/avatar-url";
 
 export interface AuthContextValue {
   user: AuthUser | null;
@@ -49,6 +50,13 @@ export interface AuthContextValue {
    * is how the client swaps it in without disturbing anything else.
    */
   refreshToken: (token: string) => void;
+  /**
+   * Merges a partial update (today: avatarUrl) into the logged-in
+   * user, in state AND in the persisted copy, so a profile-picture
+   * change shows up everywhere at once and survives a page refresh.
+   * Does nothing when nobody is logged in. `id` cannot be patched.
+   */
+  updateUser: (patch: Partial<Omit<AuthUser, "id">>) => void;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
@@ -76,6 +84,24 @@ export function getStoredAuthToken(): string | null {
   }
 }
 
+/**
+ * Drops a cached avatarUrl that isn't inside this environment's avatar
+ * bucket. The user object is cached in localStorage across sessions, so
+ * after SUPABASE_URL is switched (e.g. production -> dev) a signed-in
+ * browser still holds the old project's picture URL, which next/image
+ * would refuse to render. Only the in-memory copy is cleaned; the stored
+ * copy is overwritten the next time the user logs in or changes their
+ * picture. Everything else on the user is passed through untouched.
+ */
+function withRenderableAvatar(user: AuthUser): AuthUser {
+  if (user.avatarUrl === undefined || isTrustedAvatarUrl(user.avatarUrl)) {
+    return user;
+  }
+  const cleaned = { ...user };
+  delete cleaned.avatarUrl;
+  return cleaned;
+}
+
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -86,7 +112,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const token = window.localStorage.getItem(TOKEN_KEY);
       const storedUser = window.localStorage.getItem(USER_KEY);
-      if (token && storedUser) return JSON.parse(storedUser) as AuthUser;
+      if (token && storedUser) {
+        return withRenderableAvatar(JSON.parse(storedUser) as AuthUser);
+      }
     } catch {
       // Ignore corrupt localStorage and stay logged out.
     }
@@ -146,14 +174,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [clearLocalSession]);
 
   const login = useCallback((nextUser: AuthUser, token: string) => {
+    const safeUser = withRenderableAvatar(nextUser);
+
     try {
       window.localStorage.setItem(TOKEN_KEY, token);
-      window.localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+      window.localStorage.setItem(USER_KEY, JSON.stringify(safeUser));
     } catch {
       // Ignore storage errors.
     }
 
-    setUser(nextUser);
+    setUser(safeUser);
   }, []);
 
   const refreshToken = useCallback((token: string) => {
@@ -165,6 +195,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // request, same failure mode as any other storage write failing.
     }
   }, []);
+
+  const updateUser = useCallback(
+    (patch: Partial<Omit<AuthUser, "id">>) => {
+      if (!user) return;
+      const nextUser: AuthUser = { ...user, ...patch };
+      try {
+        window.localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+      } catch {
+        // Storage unavailable (private mode / quota): the in-memory
+        // update below still applies for this session.
+      }
+      setUser(nextUser);
+    },
+    [user]
+  );
 
   const logout = useCallback(() => {
     clearLocalSession();
@@ -189,8 +234,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       login,
       logout,
       refreshToken,
+      updateUser,
     }),
-    [user, isHydrated, login, logout, refreshToken]
+    [user, isHydrated, login, logout, refreshToken, updateUser]
   );
 
   return (

@@ -5,6 +5,7 @@
 // data to pass in, this component just lays it out.
 
 import type { AuthUser } from "@/components/auth";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import styles from "./ProfileHeader.module.css";
 
 interface ProfileHeaderProps {
@@ -12,12 +13,10 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ user }: ProfileHeaderProps) {
-  const initial = user.name.trim().charAt(0).toUpperCase() || "?";
-
   return (
     <section className={styles.header}>
       <div className={styles.avatar} aria-hidden="true">
-        {initial}
+        <UserAvatar user={user} size={176} />
       </div>
 
       <div className={styles.identity}>
