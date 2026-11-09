@@ -10,6 +10,7 @@ import "server-only";
 import { prisma } from "./prisma";
 import { getOwnerAdminEmail } from "./env";
 import { hashPassword, verifyPassword } from "./password";
+import { revokeAllSessionsForUser } from "./session";
 
 export class InvalidCurrentPasswordError extends Error {}
 export class AccountNotFoundError extends Error {}
@@ -32,7 +33,8 @@ function isOwnerEmail(email: string): boolean {
 export async function changeAdminPassword(
   userId: string,
   currentPassword: string,
-  newPassword: string
+  newPassword: string,
+  keepSessionId?: string
 ): Promise<void> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -54,8 +56,12 @@ export async function changeAdminPassword(
   const hashed = await hashPassword(newPassword);
   await prisma.user.update({
     where: { id: userId },
-    data: { password: hashed },
+    data: { password: hashed, authVersion: { increment: 1 } },
   });
+
+  // Other devices/tabs signed in as this admin are signed out; the
+  // session that made the change is kept.
+  await revokeAllSessionsForUser(userId, keepSessionId);
 }
 
 export interface AdminListItem {

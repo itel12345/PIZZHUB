@@ -9,7 +9,8 @@
 // User row delete).
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser, AuthError, ADMIN_SESSION_COOKIE } from "@/lib/auth";
+import { requireUser, AuthError } from "@/lib/auth";
+import { clearSessionCookies } from "@/lib/session";
 import { deleteAccountSchema } from "@/lib/validation/account";
 import {
   deleteUserAccount,
@@ -38,18 +39,9 @@ export async function DELETE(request: NextRequest) {
 
     const response = NextResponse.json({ success: true }, { status: 200 });
 
-    // Defense-in-depth: this endpoint already refuses to delete an
-    // ADMIN-role account (see AdminAccountProtectedError below), so
-    // this cookie shouldn't ordinarily be set for whoever just
-    // deleted their account — clearing it anyway costs nothing and
-    // matches /api/auth/logout's own behavior.
-    response.cookies.set(ADMIN_SESSION_COOKIE, "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: 0,
-    });
+    // The session rows are already gone (deleteUserAccount); this also
+    // expires the cookie in the browser, same as /api/auth/logout.
+    clearSessionCookies(response);
 
     return response;
   } catch (error) {

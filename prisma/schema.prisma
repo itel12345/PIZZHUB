@@ -71,6 +71,15 @@ model User {
   authVersion         Int      @default(0)
   emailMarketingOptIn Boolean  @default(false)
   smsMarketingOptIn   Boolean  @default(false)
+
+  // NULL = this address has not been proven by clicking an emailed
+  // link. Every pre-existing row stays NULL: nobody is marked verified
+  // on the owner's behalf. Whether login REQUIRES a value here is an
+  // application-level switch (see the rollout plan), not a DB rule.
+  emailVerifiedAt     DateTime?
+
+  sessions   Session[]
+  authTokens AuthToken[]
 }
 
 model Cart {
@@ -265,4 +274,69 @@ model Notification {
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Authentication (additive). Nothing below changes an existing table
+// except the nullable User.emailVerifiedAt column above.
+// ─────────────────────────────────────────────────────────────────
+
+enum AuthTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+// One row per signed-in browser. The cookie holds a random secret; only
+// its SHA-256 hash is stored, so a database leak cannot be replayed as
+// live sessions. Deleting a row IS logout/revocation. Cascade only
+// removes a user's sessions if the User row itself is ever hard-deleted
+// (the app anonymises instead, and deletes sessions explicitly).
+model Session {
+  id         String   @id @default(cuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash  String   @unique
+
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+  expiresAt  DateTime
+
+  userAgent  String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Single-use, short-lived tokens for email verification and password
+// reset. Stored hashed, like sessions. usedAt makes a link single-use;
+// a newer request for the same (user, type) supersedes older ones in
+// application code.
+model AuthToken {
+  id        String        @id @default(cuid())
+
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      AuthTokenType
+  tokenHash String        @unique
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([userId, type])
+  @@index([expiresAt])
+}
+
+// Fixed-window counters for abuse protection, kept in Postgres so the
+// limits hold across serverless instances. `key` is a hash of
+// "<action>:<ip or email>" so raw emails/IPs are not stored.
+model RateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+
+  @@index([windowStart])
 }

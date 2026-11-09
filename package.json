@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --require ./tests/server-only-stub.cjs --import tsx --test --test-reporter=spec tests/*.test.ts",
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
@@ -42,7 +43,7 @@
     "esbuild@0.28.1": true,
     "sharp@0.34.5": true,
     "unrs-resolver@1.12.2": true,
-    "prisma@7.10.0": true,
-    "@prisma/engines@7.10.0": true
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true
   }
 }

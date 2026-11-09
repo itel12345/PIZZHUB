@@ -17,7 +17,8 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { prisma } from "./prisma";
-import { AuthError, issueUserToken } from "./auth";
+import { AuthError } from "./auth";
+import { revokeAllSessionsForUser } from "./session";
 import { hashPassword, verifyPassword } from "./password";
 import { deleteStoredAvatar } from "./avatar";
 import type {
@@ -73,15 +74,16 @@ export async function updateMarketingPreferences(
 
 /**
  * Requires the current password, then sets the new one and bumps
- * authVersion so every OTHER outstanding session for this account stops
- * working immediately. The caller's own session would be killed by that
- * same bump, so a fresh token carrying the new authVersion is issued and
- * returned — the client must swap it in (see lib/auth.ts, requireUser).
+ * authVersion and deletes every OTHER session row for this account, so
+ * a stolen or forgotten login on another device stops working at once.
+ * The caller's own session (keepSessionId) is kept, so changing your
+ * password doesn't sign you out of the tab you changed it in.
  */
 export async function changeUserPassword(
   userId: string,
-  input: ChangeUserPasswordInput
-): Promise<{ token: string }> {
+  input: ChangeUserPasswordInput,
+  keepSessionId?: string
+): Promise<void> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { password: true },
@@ -95,16 +97,12 @@ export async function changeUserPassword(
 
   const hashed = await hashPassword(input.newPassword);
 
-  // `increment` is applied by the database, and the token is built from
-  // the row it returns, so the token can never carry a stale authVersion
-  // even if two changes race.
-  const updated = await prisma.user.update({
+  await prisma.user.update({
     where: { id: userId },
     data: { password: hashed, authVersion: { increment: 1 } },
-    select: { id: true, email: true, authVersion: true },
   });
 
-  return { token: issueUserToken(updated) };
+  await revokeAllSessionsForUser(userId, keepSessionId);
 }
 
 /**
@@ -167,6 +165,10 @@ export async function deleteUserAccount(
       },
     }),
   ]);
+
+  // Every session for the deleted account ends now (the session check
+  // would also reject the anonymized row, this removes the rows too).
+  await revokeAllSessionsForUser(userId);
 
   // The row no longer points at their photo, but the file itself would
   // still sit in the bucket — a picture of someone who was told their

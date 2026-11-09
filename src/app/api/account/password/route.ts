@@ -17,7 +17,7 @@ import { changeUserPassword, InvalidCurrentPasswordError } from "@/lib/account";
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = await requireUser(request);
+    const { userId, sessionId } = await requireUser(request);
 
     const body = await request.json();
     const result = changeUserPasswordSchema.safeParse(body);
@@ -39,9 +39,9 @@ export async function PATCH(request: NextRequest) {
     // the caller must receive a replacement to keep working. The
     // client is responsible for immediately storing it in place of
     // the old one (see AuthContext.refreshToken).
-    const { token } = await changeUserPassword(userId, result.data);
+    await changeUserPassword(userId, result.data, sessionId);
 
-    return NextResponse.json({ success: true, token }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json({ error: "Not authenticated." }, { status: 401 });

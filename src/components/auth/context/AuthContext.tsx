@@ -40,14 +40,9 @@ export interface AuthContextValue {
   login: (user: AuthUser, token: string) => void;
   logout: () => void;
   /**
-   * Replaces ONLY the stored token — not the user profile, and
-   * doesn't touch `user` state or broadcast anything to other tabs.
-   * For the one case where the server re-issues a token for the
-   * SAME session without the person re-logging in: changing your own
-   * password bumps authVersion (see lib/auth.ts), which invalidates
-   * the very request that changed it along with every other session,
-   * so the password-change endpoint hands back a new token and this
-   * is how the client swaps it in without disturbing anything else.
+   * Kept for API compatibility; does nothing. Sessions are now an
+   * HttpOnly cookie the server manages, so there is no client-held token
+   * to replace (a password change keeps this tab's session server-side).
    */
   refreshToken: (token: string) => void;
   /**
@@ -68,20 +63,14 @@ const USER_KEY = "user";
 const BROADCAST_CHANNEL_NAME = "pizzhub-auth";
 
 /**
- * The one sanctioned way for code outside AuthContext to read the
- * current Bearer token (CartContext needs this to call /api/cart/*).
- * Exists so the "token" localStorage key stays defined in exactly one
- * place — every other file imports this instead of re-typing the
- * literal string, which is exactly the kind of thing that silently
- * drifts out of sync if it's ever duplicated.
+ * Kept so existing callers keep compiling. Always null: the session
+ * credential is an HttpOnly cookie that page scripts cannot read, and
+ * same-origin fetch() sends it automatically. Callers that attach an
+ * Authorization header only when this returns a value therefore send
+ * none, and the server authenticates them by cookie.
  */
 export function getStoredAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return window.localStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 /**
@@ -110,9 +99,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(() => {
     if (typeof window === "undefined") return null;
     try {
-      const token = window.localStorage.getItem(TOKEN_KEY);
       const storedUser = window.localStorage.getItem(USER_KEY);
-      if (token && storedUser) {
+      if (storedUser) {
         return withRenderableAvatar(JSON.parse(storedUser) as AuthUser);
       }
     } catch {
@@ -173,11 +161,68 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [clearLocalSession]);
 
-  const login = useCallback((nextUser: AuthUser, token: string) => {
+  // The cached profile above is only a convenience copy. Ask the server
+  // whether a live session really exists: if it was revoked (logout on
+  // another device, password change, expiry, deleted account) this signs
+  // the tab out; if it is valid, the profile is refreshed from the
+  // database (role, name, avatar). A network error changes nothing.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      // Remove any pre-cookie bearer token left by an older version.
+      window.localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      // Ignore storage errors.
+    }
+
+    // Guests have nothing to confirm; skip the request for them.
+    try {
+      if (!window.localStorage.getItem(USER_KEY)) return;
+    } catch {
+      return;
+    }
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const response = await fetch("/api/auth/me", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (response.status === 401) {
+          clearLocalSession();
+          return;
+        }
+        if (!response.ok) return;
+        const data = (await response.json()) as { user?: AuthUser };
+        if (!data.user) return;
+        const fresh = withRenderableAvatar({
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          role: data.user.role,
+          avatarUrl: data.user.avatarUrl,
+        });
+        try {
+          window.localStorage.setItem(USER_KEY, JSON.stringify(fresh));
+        } catch {
+          // Ignore storage errors.
+        }
+        setUser(fresh);
+      } catch {
+        // Offline or aborted: keep whatever we have.
+      }
+    })();
+    return () => controller.abort();
+  }, [clearLocalSession]);
+
+  // The `token` argument is accepted for API compatibility and ignored:
+  // the server set an HttpOnly session cookie on the login response.
+  const login = useCallback((nextUser: AuthUser) => {
     const safeUser = withRenderableAvatar(nextUser);
 
     try {
-      window.localStorage.setItem(TOKEN_KEY, token);
+      window.localStorage.removeItem(TOKEN_KEY);
       window.localStorage.setItem(USER_KEY, JSON.stringify(safeUser));
     } catch {
       // Ignore storage errors.
@@ -186,15 +231,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(safeUser);
   }, []);
 
-  const refreshToken = useCallback((token: string) => {
-    try {
-      window.localStorage.setItem(TOKEN_KEY, token);
-    } catch {
-      // Ignore storage errors — worst case this tab keeps using its
-      // now-stale token and gets a 401 on its next authenticated
-      // request, same failure mode as any other storage write failing.
-    }
-  }, []);
+  // No-op, see the interface comment.
+  const refreshToken = useCallback(() => {}, []);
 
   const updateUser = useCallback(
     (patch: Partial<Omit<AuthUser, "id">>) => {
@@ -218,12 +256,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // them to notice on their own next action.
     channelRef.current?.postMessage({ type: "logout" });
 
-    // Fire-and-forget: destroys the HttpOnly admin_session cookie
-    // server-side, if one was set. Doesn't block the UI from clearing
-    // immediately — worst case on network failure, the (short-lived,
-    // 8h) admin cookie outlives the client-visible logout, same as any
-    // best-effort logout call.
-    void fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    // Fire-and-forget: the server deletes the session row (so the cookie
+    // stops working everywhere) and expires the cookie. Doesn't block the
+    // UI. keepalive lets the request finish if the page navigates away.
+    void fetch("/api/auth/logout", { method: "POST", keepalive: true }).catch(() => {});
   }, [clearLocalSession]);
 
   const value = useMemo<AuthContextValue>(

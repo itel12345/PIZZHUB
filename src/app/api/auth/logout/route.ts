@@ -1,27 +1,28 @@
 // src/app/api/auth/logout/route.ts
 //
-// Customer logout has always been "clear localStorage" (client-only,
-// fine for that token — it's not tied to any server-side session).
-// The admin cookie is different: it's HttpOnly, so client JS can't
-// clear it, and "log out" must actually destroy it server-side or the
-// cookie keeps working until it expires (constitution: "logout must
-// completely destroy the session server-side and purge all client
-// cookies"). AuthContext.logout() calls this endpoint; it's a no-op
-// for accounts that never had the cookie in the first place.
+// Logout destroys the session ON THE SERVER: the row is deleted, so the
+// cookie value stops working everywhere immediately, even if a copy of
+// it was captured. It also expires the cookie in this browser (and any
+// stale legacy admin cookie). Idempotent: logging out with no or an
+// invalid session still answers 200.
 
-import { NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { SESSION_COOKIE } from "@/lib/authConstants";
+import { revokeSessionByToken, clearSessionCookies } from "@/lib/session";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  try {
+    await revokeSessionByToken(request.cookies.get(SESSION_COOKIE)?.value);
+  } catch (error) {
+    // Still clear the cookie below; the row will lapse by expiry. Surface
+    // the failure honestly instead of pretending everything was revoked.
+    console.error("logout: session revoke failed:", error instanceof Error ? error.name : "unknown");
+    const failed = NextResponse.json({ success: false, error: "Could not fully sign out." }, { status: 500 });
+    clearSessionCookies(failed);
+    return failed;
+  }
+
   const response = NextResponse.json({ success: true }, { status: 200 });
-
-  response.cookies.set(ADMIN_SESSION_COOKIE, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: 0,
-  });
-
+  clearSessionCookies(response);
   return response;
 }

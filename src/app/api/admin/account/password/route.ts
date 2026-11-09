@@ -31,7 +31,8 @@ export async function PATCH(request: NextRequest) {
     await changeAdminPassword(
       session.userId,
       result.data.currentPassword,
-      result.data.newPassword
+      result.data.newPassword,
+      session.sessionId
     );
 
     return NextResponse.json({ success: true }, { status: 200 });
