@@ -15,6 +15,10 @@ import AuthInput from "../components/AuthInput";
 import PasswordField from "../components/PasswordField";
 import SocialLogin from "../components/SocialLogin";
 import { useAuth } from "../hooks/useAuth";
+import {
+  EMAIL_NOT_VERIFIED_CODE,
+  resendVerificationEmail,
+} from "@/lib/auth-client";
 import styles from "./LoginForm.module.css";
 
 interface LoginFormValues {
@@ -67,8 +71,17 @@ export default function LoginForm({
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Shown only when the server answers EMAIL_NOT_VERIFIED, which it does
+  // only once verification has been switched on for the site.
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendNote, setResendNote] = useState<{ ok: boolean; text: string } | null>(null);
 
   const updateField = (field: keyof LoginFormValues, value: string) => {
+    if (field === "email") {
+      setNeedsVerification(false);
+      setResendNote(null);
+    }
     setValues((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => {
       if (!prev[field]) return prev;
@@ -83,6 +96,19 @@ export default function LoginForm({
     if (!values.email.trim()) nextErrors.email = "Please enter your email.";
     if (!values.password) nextErrors.password = "Please enter your password.";
     return nextErrors;
+  };
+
+  const handleResend = async () => {
+    if (isResending || !values.email.trim()) return;
+    setIsResending(true);
+    const result = await resendVerificationEmail(values.email);
+    setIsResending(false);
+    setResendNote({
+      ok: result.ok,
+      text: result.ok
+        ? result.message || "A new verification email is on its way."
+        : result.message,
+    });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -107,6 +133,11 @@ export default function LoginForm({
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === EMAIL_NOT_VERIFIED_CODE) {
+          setNeedsVerification(true);
+          setResendNote(null);
+          return;
+        }
         alert(data.error || "Login failed.");
         return;
       }
@@ -184,6 +215,28 @@ setValues({
           Forgot password?
         </button>
       </div>
+
+      {needsVerification && (
+        <div className={styles.notice} role="status">
+          <p className={styles.noticeText}>
+            Please verify your email address before signing in. Check your
+            inbox for the verification link.
+          </p>
+          <button
+            type="button"
+            className={styles.linkButton}
+            onClick={handleResend}
+            disabled={isResending}
+          >
+            {isResending ? "Sending..." : "Resend verification email"}
+          </button>
+          {resendNote && (
+            <p className={resendNote.ok ? styles.noticeStatus : styles.noticeError}>
+              {resendNote.text}
+            </p>
+          )}
+        </div>
+      )}
 
       <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
         {isSubmitting ? "Checking..." : "Continue"}

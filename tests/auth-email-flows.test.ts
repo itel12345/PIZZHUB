@@ -221,7 +221,11 @@ describe("email-based flows (Resend request recorded by a test double)", { skip:
     it("a too-weak password is rejected WITHOUT burning the token", async () => {
       const u = await user();
       const token = await T.createAuthToken(u.id, "PASSWORD_RESET");
-      assert.equal((await reset.POST(resetReq(token, "short"))).status, 400);
+      const weak = await reset.POST(resetReq(token, "short"));
+      assert.equal(weak.status, 400);
+      const weakBody = await weak.json();
+      assert.equal(weakBody.code, "INVALID_PASSWORD", "password problems are not reported as link problems");
+      assert.match(weakBody.error, /at least 8/);
       assert.equal((await reset.POST(resetReq(token, "a".repeat(73)))).status, 400);
       assert.equal((await reset.POST(resetReq(token, "brand-new-pass-1"))).status, 200);
     });
@@ -234,10 +238,12 @@ describe("email-based flows (Resend request recorded by a test double)", { skip:
       for (const t of [expired, wrongType, "A".repeat(43), "short", "../../etc/passwd"]) {
         const res = await reset.POST(resetReq(t, "brand-new-pass-1"));
         assert.equal(res.status, 400, t.slice(0, 8));
-        msgs.add(JSON.stringify(await res.json()));
+        const body = await res.json();
+        assert.equal(body.code, "INVALID_TOKEN", t.slice(0, 8));
+        msgs.add(JSON.stringify(body));
       }
-      // malformed tokens fail schema validation (different text); the 3 well-formed ones must be identical
-      assert.ok(msgs.size <= 3);
+      // Malformed, expired, wrong-type and unknown tokens are indistinguishable to the caller.
+      assert.equal(msgs.size, 1);
       assert.equal((await login.POST(req("/api/auth/login", { json: { email: u.email, password: PASSWORD }, ip: freshIp() }))).status, 200, "password untouched");
     });
   });
@@ -249,7 +255,9 @@ describe("email-based flows (Resend request recorded by a test double)", { skip:
       const token = await T.createAuthToken(u.id, "EMAIL_VERIFICATION");
       assert.equal((await verify.POST(verifyReq(token))).status, 200);
       assert.ok((await prisma.user.findUniqueOrThrow({ where: { id: u.id } })).emailVerifiedAt);
-      assert.equal((await verify.POST(verifyReq(token))).status, 400, "replay rejected");
+      const replay = await verify.POST(verifyReq(token));
+      assert.equal(replay.status, 400, "replay rejected");
+      assert.equal((await replay.json()).code, "INVALID_TOKEN");
     });
 
     it("rejects expired tokens and tokens of the wrong type", async () => {

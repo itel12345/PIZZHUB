@@ -1,13 +1,16 @@
 // src/components/auth/forms/ForgotPasswordForm.tsx
 //
-// Simple elegant reset-request screen. Submission is frontend-only —
-// no email is actually sent. Shows a success state after "submitting",
-// with a way back to Login.
+// Simple elegant reset-request screen. Submits to the real
+// POST /api/auth/forgot-password endpoint. The success state is shown
+// ONLY when the server accepted the request; if email delivery isn't
+// configured (or the caller is rate-limited) the server's honest message
+// is shown instead. Always offers a way back to Login.
 
 "use client";
 
 import { useState } from "react";
 import AuthInput from "../components/AuthInput";
+import { requestPasswordReset } from "@/lib/auth-client";
 import styles from "./ForgotPasswordForm.module.css";
 
 interface ForgotPasswordFormProps {
@@ -22,8 +25,9 @@ export default function ForgotPasswordForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) return;
 
     if (!email.trim()) {
       setError("Please enter your email.");
@@ -31,13 +35,15 @@ export default function ForgotPasswordForm({
     }
     setError(undefined);
 
-    // TODO: replace with a real password-reset request once the
-    // backend exists. Frontend-only: no email is actually sent.
     setIsSubmitting(true);
-    window.setTimeout(() => {
-      setIsSubmitting(false);
+    const result = await requestPasswordReset(email);
+    setIsSubmitting(false);
+
+    if (result.ok) {
       setIsSubmitted(true);
-    }, 900);
+    } else {
+      setError(result.message);
+    }
   };
 
   if (isSubmitted) {

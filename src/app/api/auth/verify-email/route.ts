@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
     const parsed = verifyEmailSchema.safeParse(body);
-    const invalid = { error: "This verification link is invalid or has expired." };
+    const invalid = {
+      error: "This verification link is invalid or has expired.",
+      code: "INVALID_TOKEN",
+    };
     if (!parsed.success) return NextResponse.json(invalid, { status: 400 });
 
     const userId = await consumeAuthToken(parsed.data.token, "EMAIL_VERIFICATION");

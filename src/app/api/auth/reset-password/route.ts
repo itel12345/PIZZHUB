@@ -23,19 +23,25 @@ export async function POST(request: NextRequest) {
 
     // Validate the new password BEFORE spending the single-use token, so
     // a too-short password doesn't burn the person's only reset link.
+    const INVALID_LINK = {
+      error: "This reset link is invalid or has expired.",
+      code: "INVALID_TOKEN",
+    };
     const parsed = resetPasswordSchema.safeParse(body);
     if (!parsed.success) {
+      // A malformed/tampered token is reported exactly like an expired
+      // one; only password-rule problems get their own message.
+      const tokenIssue = parsed.error.issues.some((i) => i.path[0] === "token");
+      if (tokenIssue) return NextResponse.json(INVALID_LINK, { status: 400 });
       const first = parsed.error.issues[0]?.message;
-      return NextResponse.json({ error: first ?? "Invalid request." }, { status: 400 });
-    }
-
-    const userId = await consumeAuthToken(parsed.data.token, "PASSWORD_RESET");
-    if (!userId) {
       return NextResponse.json(
-        { error: "This reset link is invalid or has expired." },
+        { error: first ?? "Invalid request.", code: "INVALID_PASSWORD" },
         { status: 400 }
       );
     }
+
+    const userId = await consumeAuthToken(parsed.data.token, "PASSWORD_RESET");
+    if (!userId) return NextResponse.json(INVALID_LINK, { status: 400 });
 
     const hashed = await hashPassword(parsed.data.password);
     await prisma.user.update({

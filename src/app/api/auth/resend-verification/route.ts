@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { emailOnlySchema } from "@/lib/validation/auth";
 import { createAuthToken } from "@/lib/auth-tokens";
@@ -49,20 +49,14 @@ export async function POST(request: NextRequest) {
     });
     const user = matches.length === 1 ? matches[0] : null;
 
-    // Work happens after the response so timing doesn't reveal existence.
-    const task = async () => {
-      if (!user || user.emailVerifiedAt) return;
+    // Sent inline for reliability on serverless hosts (see forgot-password).
+    if (user && !user.emailVerifiedAt) {
       try {
         const token = await createAuthToken(user.id, "EMAIL_VERIFICATION");
         await sendVerificationEmail(user.email, user.name, token);
       } catch (error) {
         console.error("resend verification failed:", error instanceof Error ? error.name : "unknown");
       }
-    };
-    try {
-      after(task);
-    } catch {
-      await task(); // outside a request scope (tests)
     }
     return NextResponse.json(GENERIC, { status: 200 });
   } catch (error) {

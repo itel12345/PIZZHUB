@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { emailOnlySchema } from "@/lib/validation/auth";
 import { createAuthToken } from "@/lib/auth-tokens";
@@ -47,19 +47,21 @@ export async function POST(request: NextRequest) {
     const user =
       matches.length === 1 && !matches[0].email.endsWith(DELETED_ACCOUNT_DOMAIN) ? matches[0] : null;
 
-    const task = async () => {
-      if (!user) return;
+    // Sent INLINE, before answering, so a "sent" page is never shown for
+    // an email that was not handed to the provider. (Deferring it with
+    // after() would hide the tiny timing difference between known and
+    // unknown addresses, but on serverless hosts background work can be
+    // cut off after the response, which would silently drop real reset
+    // emails. Account existence is already revealed by signup's 409, and
+    // this endpoint is rate-limited per IP and per email.)
+    if (user) {
       try {
         const token = await createAuthToken(user.id, "PASSWORD_RESET");
         await sendPasswordResetEmail(user.email, user.name, token);
       } catch (error) {
+        // Never surfaced to the caller (same generic 200 either way).
         console.error("password reset email failed:", error instanceof Error ? error.name : "unknown");
       }
-    };
-    try {
-      after(task);
-    } catch {
-      await task(); // outside a request scope (tests)
     }
 
     return NextResponse.json(

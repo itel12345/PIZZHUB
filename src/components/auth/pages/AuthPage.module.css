@@ -1,0 +1,69 @@
+/* Page-level wrapper for the email-link pages (/verify-email, /reset-password).
+   Mirrors the auth modal's glass panel and AuthHeader typography so these
+   pages read as the same product; form controls, buttons and success
+   states are reused from the existing auth form stylesheets. */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Clear the floating navbar. */
+  padding: 7rem 1.5rem 4rem;
+}
+
+.panel {
+  width: 100%;
+  max-width: 26rem;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.errorText {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: #ff7a7a;
+}
+
+.noticeText {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Lets next/link reuse the existing submit-button look. */
+.asLink {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
