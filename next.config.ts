@@ -81,7 +81,7 @@ const nextConfig: NextConfig = {
   // rather than a fixed subdomain since localtunnel/ngrok's free tiers
   // assign a new random subdomain on every restart. Has zero effect on
   // production builds — this option is dev-server-only.
-  allowedDevOrigins: ["*.loca.lt", "*.ngrok-free.app", "*.ngrok.io"],
+  allowedDevOrigins: ["172.20.10.2", "172.20.10.*", "*.loca.lt", "*.ngrok-free.app", "*.ngrok.io"],
 };
 
 export default nextConfig;

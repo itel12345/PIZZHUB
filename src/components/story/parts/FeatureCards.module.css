@@ -18,14 +18,20 @@
 .card {
   position: relative;
   overflow: hidden;
+  /* Keeps .cardGlow (z-index: -1) scoped inside the card. The removed
+     backdrop-filter used to create this stacking context implicitly. */
+  isolation: isolate;
 
   padding: 2rem 1.75rem;
   border-radius: 1.25rem;
 
   background: var(--color-glass);
   border: 1px solid var(--color-glass-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* backdrop-filter removed on purpose. Once revealed, each card runs
+     an infinite idleFloat animation, which made the browser re-sample
+     and re-blur the backdrop of all four cards on every frame, forever.
+     The backdrop here is only the page background and soft glow, so the
+     blur had no visible effect. */
 
   opacity: 0;
   transform: translateY(32px);

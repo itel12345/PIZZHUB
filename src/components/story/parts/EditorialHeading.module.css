@@ -23,7 +23,7 @@
 .visible {
   opacity: 1;
   transform: translateY(0);
-  filter: blur(0);
+  filter: none; /* was blur(0): a no-op filter that still kept a GPU layer */
 }
 
 /* --------------------------------------

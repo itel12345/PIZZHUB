@@ -181,7 +181,11 @@
   opacity: 0.3;
   z-index: -1;
 
-  animation: glowPulse 8s ease-in-out infinite;
+  /* The infinite glowPulse animation was removed. This gradient is
+     "orange 0%, transparent 0%", i.e. fully transparent, so the pulse
+     was invisible but still kept the compositor producing a frame
+     every tick on the home page. If the gradient is ever restored to a
+     visible glow, re-add:  animation: glowPulse 8s ease-in-out infinite; */
   transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
 }
 
